@@ -1,0 +1,15 @@
+
+target/
+
+# IntelliJ
+.idea/
+*.iml
+
+
+.vscode/
+
+
+*.log
+
+
+.DS_Store
