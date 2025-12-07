@@ -28,15 +28,15 @@ public class UserController {
     @PostMapping
     public  ResponseEntity<UserDto>createUser(@RequestBody CreateUser request){
 
-       UserDto users =  userService.createUser(request.name,request.getEmail());
+       UserDto users =  userService.createUser(request.getName(),request.getEmailId());
 
         return ResponseEntity.ok(users);
 
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<UserDto>getUser(@PathVariable Long id ){
-        UserDto users = userService.getUserById(id);
+    @GetMapping("/{userId}")
+    public ResponseEntity<UserDto>getUser(@PathVariable Long userId){
+        UserDto users = userService.getUserById(userId);
         return ResponseEntity.ok(users);
     }
 

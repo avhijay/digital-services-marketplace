@@ -29,7 +29,7 @@ public class OrderService {
 
         UserDto user = userClient.getUserById(orderRequest.getUserId());
         if (user==null){
-            throw  new IllegalArgumentException ("User not found with id: "+orderRequest.getUserId());
+            throw  new IllegalArgumentException ("User not found with userId: "+orderRequest.getUserId());
         }
 
         Long orderId = idGeneration.getAndIncrement();
@@ -51,6 +51,7 @@ public class OrderService {
 
 
     public OrderResponse getOrder(Long id) {
+
         return orders.get(id);
 
 

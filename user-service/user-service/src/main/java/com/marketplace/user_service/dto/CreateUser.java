@@ -7,15 +7,12 @@ import lombok.Setter;
 @Getter
 public class CreateUser {
     public String name;
-    public String  email;
+    public String emailId;
 
     public CreateUser(){}
 
-
-    public CreateUser(String name, String email) {
+    public CreateUser(String name, String emailId) {
         this.name = name;
-        this.email = email;
+        this.emailId = emailId;
     }
-
-
 }

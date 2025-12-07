@@ -29,12 +29,12 @@ private final OrderService orderService;
 
 
     @PostMapping
-    ResponseEntity<OrderResponse> createUser (@RequestBody OrderRequest orderRequest){
+    ResponseEntity<OrderResponse> createOrder (@RequestBody OrderRequest orderRequest){
                      OrderResponse order = orderService.createOrder(orderRequest);
                      return ResponseEntity.ok(order);
     }
     @GetMapping("/{id}")
-    ResponseEntity <OrderResponse> getUserById(@PathVariable Long id){
+    ResponseEntity <OrderResponse> getOrderById(@PathVariable Long id){
             OrderResponse order = orderService.getOrder(id);
             return ResponseEntity.ok(order);
     }

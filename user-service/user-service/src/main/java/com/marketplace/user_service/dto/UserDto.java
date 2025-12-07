@@ -7,17 +7,17 @@ import lombok.Setter;
 @Getter
 public class UserDto {
 
-    private Long id;
+    private Long userId;
     private String name;
-    private String email;
+    private String emailId;
 
     public UserDto(){}
 
 
     public UserDto(Long id, String name, String email) {
-        this.id = id;
+        this.userId = id;
         this.name = name;
-        this.email = email;
+        this.emailId = email;
     }
 
 
