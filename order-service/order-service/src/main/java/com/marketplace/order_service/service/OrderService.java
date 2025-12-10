@@ -1,7 +1,9 @@
 package com.marketplace.order_service.service;
 
 
+import com.marketplace.order_service.client.NotificationClient;
 import com.marketplace.order_service.client.UserClient;
+import com.marketplace.order_service.dto.NotificationRequest;
 import com.marketplace.order_service.dto.OrderRequest;
 import com.marketplace.order_service.dto.OrderResponse;
 import com.marketplace.order_service.dto.UserDto;
@@ -23,11 +25,13 @@ public class OrderService {
 
 private static final Logger log = LoggerFactory.getLogger(OrderService.class);
     private final UserClient userClient;
+    private final NotificationClient notificationClient;
     private final AtomicLong idGeneration=new AtomicLong(1);
     private final Map<Long, OrderResponse> orders = new ConcurrentHashMap<>();
 
-    public OrderService(UserClient userClient){
+    public OrderService(UserClient userClient , NotificationClient notificationClient){
         this.userClient=userClient;
+        this.notificationClient=notificationClient;
     }
 
 
@@ -35,8 +39,6 @@ private static final Logger log = LoggerFactory.getLogger(OrderService.class);
 
 
 
-    @CircuitBreaker(name = "userServiceCB",
-   fallbackMethod = "createOrderFallback")
     public OrderResponse createOrder(OrderRequest orderRequest){
 
     UserDto user = userClient.getUserById(orderRequest.getUserId());
@@ -51,14 +53,19 @@ private static final Logger log = LoggerFactory.getLogger(OrderService.class);
     order.setUserName(user.getName());
     order.setUserId(user.getUserId());
     orders.put(orderId, order);
+
+        NotificationRequest request = new NotificationRequest();
+        request.setMessage("Order :"+orderId+" created for user : "+user.getUserId()+"--"+user.getName());
+        request.setUserId(user.getUserId());
+        request.setOrderId(orderId);
+        notificationClient.createNotification(request);
+
+
+
+
     return order;
     }
 
-    public OrderResponse createOrderFallback(   OrderRequest orderRequest ,Throwable ex){
-
-        log.error("User Service did not respond {} | cannot process {}",ex.getMessage(),orderRequest);
-        throw new UserServiceNotRespondingException("User Service not Responding ");
-    }
 
 
 
