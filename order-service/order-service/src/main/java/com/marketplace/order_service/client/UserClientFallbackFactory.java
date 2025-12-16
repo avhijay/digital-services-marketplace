@@ -20,7 +20,9 @@ public class UserClientFallbackFactory implements FallbackFactory<UserClient> {
         return new UserClient() {
             @Override
             public UserDto getUserById(Long userId) {
-                logs.error("Unable to fetch user {} , reason :{}",userId,cause.toString());
+
+
+                logs.error("Fallback triggered while creating order for userId={} | Reason={}",userId,cause.getMessage() );
 
                 throw new UserServiceNotRespondingException("User-service not responding");
             }

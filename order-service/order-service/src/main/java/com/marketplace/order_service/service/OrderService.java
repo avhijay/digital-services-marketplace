@@ -23,6 +23,7 @@ import java.util.concurrent.atomic.AtomicLong;
 public class OrderService {
 
 
+
 private static final Logger log = LoggerFactory.getLogger(OrderService.class);
     private final UserClient userClient;
     private final NotificationClient notificationClient;
@@ -41,10 +42,18 @@ private static final Logger log = LoggerFactory.getLogger(OrderService.class);
 
     public OrderResponse createOrder(OrderRequest orderRequest){
 
+        log.info("Creating order for userId={}",orderRequest.getUserId());
+        log.debug("Calling userService for  userId={}",orderRequest.getUserId());
+
+        // USER CLIENT
     UserDto user = userClient.getUserById(orderRequest.getUserId());
+    log.debug("UserService responded successfully for userId={}",orderRequest.getUserId());
+
+
     if (user == null) {
         throw new IllegalArgumentException("User not found with userId: " + orderRequest.getUserId());
     }
+
     Long orderId = idGeneration.getAndIncrement();
     OrderResponse order = new OrderResponse();
     order.setOrderId(orderId);
@@ -54,15 +63,17 @@ private static final Logger log = LoggerFactory.getLogger(OrderService.class);
     order.setUserId(user.getUserId());
     orders.put(orderId, order);
 
+    //NOTIFICATION CLIENT
         NotificationRequest request = new NotificationRequest();
         request.setMessage("Order :"+orderId+" created for user : "+user.getUserId()+"--"+user.getName());
         request.setUserId(user.getUserId());
         request.setOrderId(orderId);
+
+        log.info("Generating order for userId={}",orderRequest.getUserId());
+
         notificationClient.createNotification(request);
 
-
-
-
+log.info("Order created successfully. orderId={}",orderId);
     return order;
     }
 

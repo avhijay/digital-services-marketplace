@@ -16,12 +16,14 @@ import java.util.concurrent.atomic.AtomicLong;
 
 @Service
 public class NotificationService {
+    private static final Logger log = LoggerFactory.getLogger(NotificationService.class);
 
     private static  final Logger logs = LoggerFactory.getLogger(NotificationService.class);
     private final  AtomicLong idGeneration = new AtomicLong(1);
-    private static Map<Long , List<Notification>> notifications= new ConcurrentHashMap<>();
+    private static final Map<Long , List<Notification>> notifications= new ConcurrentHashMap<>();
 
     public Notification createNotification(NotificationRequest request){
+        log.info("Creating Notification for user={} with order={} ",request.getUserId(),request.getOrderId());
         Long notificationId= idGeneration.getAndIncrement();
 
         Notification notification= new Notification();
@@ -40,7 +42,7 @@ public class NotificationService {
         userNotifications.add(notification);
 
         notifications.put(request.getUserId(), userNotifications);
-
+log.info("Notification created for user={} with order={} | notification={}",request.getUserId(),request.getOrderId(),notificationId);
 
 
         return notification;
