@@ -43,11 +43,17 @@ public class UserController {
     @GetMapping("/{userId}")
     public ResponseEntity<UserDto>getUser(@PathVariable Long userId){
         log.info("Request : getUserById = received");
-
+//userService.testingCircuitBreaker(2);
         UserDto users = userService.getUserById(userId);
         log.info("Request getUserById completed Successfully");
         return ResponseEntity.ok(users);
     }
+
+    @GetMapping("/test/circuitbreaker/{delay}")
+    public ResponseEntity<String>circuitBreakerTest(@PathVariable int delay){
+        return ResponseEntity .ok(userService.testingCircuitBreaker(delay));
+    }
+
 
 
 }

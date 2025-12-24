@@ -41,6 +41,22 @@ public class UserService {
         }
 
 
+        public String testingCircuitBreaker (int delay){
+
+            try{
+                System.out.println("Simulating circuitBreaker working , Thread  sleeping for :"+delay);
+                Thread.sleep(delay* 1000L);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+
+
+return "Successfully done";
+
+
+
+        }
+
 
 
 
