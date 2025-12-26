@@ -24,7 +24,7 @@ public class OrderReadinessIndicator implements HealthIndicator {
     public Health health() {
 
 
-        CircuitBreaker userClientCircuitBreaker = circuitBreakerRegistry.circuitBreaker("userClient");
+        CircuitBreaker userClientCircuitBreaker = circuitBreakerRegistry.circuitBreaker("UserClientgetUserByIdLong");
         CircuitBreaker.State state = userClientCircuitBreaker.getState();
 
 
