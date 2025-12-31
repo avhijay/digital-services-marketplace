@@ -6,7 +6,7 @@ product_id BIGINT NOT NULL,
 unit_price DECIMAL(12,2) NOT NULL,
 line_total DECIMAL(12,2) NOT NULL,
 
-CONSTRAINT fk_order_item_order FOREIGN KEY (order_id) REFERENCES orders(id);
+CONSTRAINT fk_order_item_order FOREIGN KEY (order_id) REFERENCES orders(id)
 
 
 );
