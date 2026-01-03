@@ -1,76 +1,31 @@
 package com.marketplace.catalog_service.service;
 
-
-import com.marketplace.catalog_service.dto.ProductDto;
-import com.marketplace.catalog_service.dto.ProductRequest;
-import com.marketplace.catalog_service.dto.ProductResponse;
-import com.marketplace.catalog_service.dto.UpdateProduct;
-import com.marketplace.catalog_service.exception.ProductNotFoundException;
-import org.springframework.stereotype.Service;
+import com.marketplace.catalog_service.dto.AdminProductDto;
+import com.marketplace.catalog_service.dto.AdminProductDtoResponse;
+import com.marketplace.catalog_service.dto.InternalOrderDto;
+import com.marketplace.catalog_service.dto.PublicProductResponse;
+import com.marketplace.catalog_service.enums.Status;
 
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicLong;
 
-@Service
-public class ProductService {
+public interface ProductService {
+AdminProductDtoResponse createProduct (AdminProductDto adminProductDto);
+AdminProductDtoResponse updateProduct (AdminProductDto adminProductDto );
 
-    private static final AtomicLong idGeneration = new AtomicLong(1);
-    private final Map<Long , ProductDto> products = new ConcurrentHashMap<>();
+PublicProductResponse activateProduct(Long productId);
+PublicProductResponse deactivateProduct(Long productId);
 
-    public ProductDto createProduct (ProductRequest request){
+PublicProductResponse increaseStock(Long productId, Integer quantity);
 
+PublicProductResponse decreaseStock(Long productId, Integer quantity);
 
-        Long productId = idGeneration.getAndIncrement();
-        ProductDto newProduct = new ProductDto();
-        newProduct.setCategory(request.getCategory());
-        newProduct.setName(request.getName());
-        newProduct.setPrice(request.getPrice());
-        newProduct.setDescription(request.getDescription());
-        newProduct.setProductId(productId);
-        products.put(productId,newProduct);
+InternalOrderDto getProductById(Long productId);
 
-        return newProduct;
+InternalOrderDto getProductByStatus(Status status);
 
-    }
+List<InternalOrderDto> getProductByIds(List<Long>ids);
 
-    public ProductDto getProductById(Long productId){
-        if (products.get(productId)==null){
-            throw new ProductNotFoundException("No product found with the id : "+productId);
-        }
-        return  products.get(productId);
-
-    }
-
-    public List<ProductDto> getAllProducts(){
-        return  products.values().stream().toList();
-    }
-
-    public ProductDto updateProduct(Long productId , UpdateProduct update){
-
-
-            ProductDto product = getProductById(productId);
-
-            product.setDescription(update.getDescription());
-            product.setName(update.getName());
-            product.setPrice(update.getPrice());
-            products.put(productId, product);
-
-
-        return product;
-    }
-
-
-    public void deleteProduct(Long productId){
-
-     if (products.get(productId)!=null) {
-         products.remove(productId);
-     }else{
-        throw  new ProductNotFoundException("No product found with the id of :"+ productId);
-     }
-
-    }
+PublicProductResponse validateStockAvailability(Long productId, Integer quantity );
 
 
 }

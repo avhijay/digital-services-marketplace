@@ -39,13 +39,13 @@ private final OrderServiceImpl orderServiceImpl;
 
 
 
-    @GetMapping("/{id}")
-    ResponseEntity <OrderResponse> getOrderById(@PathVariable Long id){
-            log.info("Request : getOrderById for {} : received ",id);
-            OrderResponse order = orderServiceImpl.getOrder(id);
-            log.info("Request : getOrderById for : {}  completed Successfully",id);
-            return ResponseEntity.ok(order);
-    }
+//    @GetMapping("/{id}")
+//    ResponseEntity <OrderResponse> getOrderById(@PathVariable Long id){
+//            log.info("Request : getOrderById for {} : received ",id);
+//            OrderResponse order = orderServiceImpl.getOrder(id);
+//            log.info("Request : getOrderById for : {}  completed Successfully",id);
+//            return ResponseEntity.ok(order);
+//    }
 
 
 
