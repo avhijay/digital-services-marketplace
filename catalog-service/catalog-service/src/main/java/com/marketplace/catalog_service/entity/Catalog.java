@@ -3,10 +3,16 @@ package com.marketplace.catalog_service.entity;
 
 import com.marketplace.catalog_service.enums.Status;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 import java.math.BigDecimal;
 import java.time.Instant;
-
+@Getter
+@Setter
+@ToString
 @Entity
 @Table(name = "catalog",uniqueConstraints = @UniqueConstraint(name = "uk_catalog_name",columnNames = "name"))
 public class Catalog {
@@ -14,6 +20,7 @@ public class Catalog {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
+    @Setter(AccessLevel.NONE)
     private Long id;
 
 
@@ -39,9 +46,12 @@ public class Catalog {
     private Status status;
 
     @Column(name = "created_at", nullable = false)
+    @Setter(AccessLevel.NONE)
     private Instant createdAt;
 
+
     @Column(name = "updated_at")
+    @Setter(AccessLevel.NONE)
     private Instant updatedAt;
 
 

@@ -9,18 +9,21 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 
 
 public record AdminProductDtoResponse (
 
 
-
+Long id,
         String name,
         String description,
         BigDecimal price,
         String currency,
         Integer stock,
-        Status status
+        Status status,
+
+Instant createdAt
 
 
 
