@@ -12,15 +12,15 @@ AdminProductUpdateDto updateProduct (Long id , AdminProductDto adminProductDto )
 PublicProductResponse activateProduct(Long productId);
 PublicProductResponse deactivateProduct(Long productId);
 
-InternalOrderDto increaseStock(Long productId, Integer quantity);
+InternalProductDto increaseStock(Long productId, Integer quantity);
 
-InternalOrderDto decreaseStock(Long productId, Integer quantity);
+InternalProductDto decreaseStock(Long productId, Integer quantity);
 
-InternalOrderDto getProductById(Long productId);
+InternalProductDto getProductById(Long productId);
 
- List< InternalOrderDto> getProductByStatus(Status status);
+ List<InternalProductDto> getProductByStatus(Status status);
 
-List<InternalOrderDto> getProductByIds(List<Long>ids);
+List<InternalProductDto> getProductByIds(List<Long>ids);
 
 void validateStockAvailability(Long productId, Integer quantity );
 

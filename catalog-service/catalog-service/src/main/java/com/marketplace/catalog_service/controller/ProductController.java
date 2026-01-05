@@ -3,62 +3,44 @@ package com.marketplace.catalog_service.controller;
 
 import com.marketplace.catalog_service.dto.AdminProductDto;
 import com.marketplace.catalog_service.dto.AdminProductDtoResponse;
+import com.marketplace.catalog_service.dto.InternalProductDto;
 import com.marketplace.catalog_service.dto.UpdateProduct;
+import com.marketplace.catalog_service.service.ProductService;
 import com.marketplace.catalog_service.service.ProductServiceImpl;
+import jakarta.servlet.http.HttpServletRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.util.List;
 
 @RestController
 @RequestMapping("/products")
 public class ProductController {
 
-    private final ProductServiceImpl productServiceImpl;
-
-
-
-    public ProductController(ProductServiceImpl productServiceImpl){
-        this.productServiceImpl = productServiceImpl;
-
+    private final ProductService productService;
+    private static final Logger log = LoggerFactory.getLogger(ProductController.class);
+    public ProductController(ProductService productService){
+        this.productService=productService;
     }
 
 
-//    @PostMapping
-//    public ResponseEntity<AdminProductDto>createProduct(@RequestBody AdminProductDtoResponse request){
-//        AdminProductDto adminProductDto = productServiceImpl.createProduct(request);
-//        return ResponseEntity.ok(adminProductDto);
-//    }
-//
-//    @GetMapping("/{productId}")
-//    public ResponseEntity<AdminProductDto>getById(@PathVariable Long productId){
-//        AdminProductDto adminProductDto = productServiceImpl.getProductById(productId);
-//        return ResponseEntity.ok(adminProductDto);
-//    }
-//
-//    @GetMapping("/all")
-//    public ResponseEntity<List<AdminProductDto>> getAllProducts(){
-//
-//        return ResponseEntity.ok(productServiceImpl.getAllProducts());
-//    }
-//
-//
-//    @PatchMapping("/update/{productId}")
-//    public ResponseEntity<AdminProductDto> updateProduct(@PathVariable Long productId, @RequestBody UpdateProduct update){
-//
-//        AdminProductDto updateData = productServiceImpl.updateProduct(productId,update);
-//        return ResponseEntity.ok(productServiceImpl.getProductById(productId));
-//
-//    }
-//
-//@DeleteMapping("/remove/{productId}")
-//public ResponseEntity<Void>deleteProduct(@PathVariable Long productId){
-//    productServiceImpl.deleteProduct(productId);
-//    return ResponseEntity.noContent().build();
-//
-//
-//}
-//
+    @PostMapping
+    public ResponseEntity<AdminProductDtoResponse> createProduct (@RequestBody AdminProductDto adminProductDto ){
+
+      AdminProductDtoResponse adminProductDtoResponse=   productService.createProduct(adminProductDto);
+      URI location = URI.create("/products"+adminProductDtoResponse.id());
+      return ResponseEntity.created(location).body(adminProductDtoResponse);
+
+    }
+
+    @GetMapping("/get/{productId}")
+    public ResponseEntity<InternalProductDto> getProductById(@PathVariable Long productId){
+        InternalProductDto internalProductDto = productService.getProductById(productId);
+        return ResponseEntity.ok(internalProductDto);
+    }
 
 
 

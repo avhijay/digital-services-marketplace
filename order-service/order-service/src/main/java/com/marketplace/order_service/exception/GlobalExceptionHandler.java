@@ -38,6 +38,27 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(error,HttpStatus.NOT_FOUND);
     }
 
+
+
+    @ExceptionHandler(CatalogServiceNotRespondingException.class)
+    public ResponseEntity<ErrorResponse>catalogServiceNotResponding(CatalogServiceNotRespondingException e , HttpServletRequest request){
+
+
+        ErrorResponse error = new ErrorResponse();
+        error.setPath(request.getRequestURI());
+        error.setMessage(e.getMessage());
+        error.setTimeStamp("Time" +Timestamp.valueOf(LocalDateTime.now()));
+        error.setError("Catalog Service not Responding ");
+        error.setStatus(HttpStatus.SERVICE_UNAVAILABLE.value());
+        return  new ResponseEntity<>(error,HttpStatus.SERVICE_UNAVAILABLE);
+    }
+
+
+
+
+
+
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
 
     public ResponseEntity<ErrorResponse> methodArgumentNotValidException(MethodArgumentNotValidException e , HttpServletRequest request){

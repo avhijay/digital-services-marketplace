@@ -2,7 +2,7 @@ package com.marketplace.user_service.controller;
 
 import com.marketplace.user_service.dto.CreateUser;
 import com.marketplace.user_service.dto.UserDto;
-import com.marketplace.user_service.service.UserService;
+import com.marketplace.user_service.service.UserServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
@@ -15,9 +15,9 @@ public class UserController {
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
 
 
-    private final  UserService userService;
+    private final UserServiceImpl userService;
 
-    public UserController(UserService userService){
+    public UserController(UserServiceImpl userService){
         this.userService=userService;
     }
 
@@ -28,31 +28,6 @@ public class UserController {
     }
 
 
-
-    @PostMapping
-    public  ResponseEntity<UserDto>createUser(@RequestBody CreateUser request){
-        log.info("Request : createUser = received ");
-
-       UserDto users =  userService.createUser(request.getName(),request.getEmailId());
-       log.info("Request createUser completed Successfully");
-
-        return ResponseEntity.ok(users);
-
-    }
-
-    @GetMapping("/{userId}")
-    public ResponseEntity<UserDto>getUser(@PathVariable Long userId){
-        log.info("Request : getUserById = received");
-//userService.testingCircuitBreaker(2);
-        UserDto users = userService.getUserById(userId);
-        log.info("Request getUserById completed Successfully");
-        return ResponseEntity.ok(users);
-    }
-
-    @GetMapping("/test/circuitbreaker/{delay}")
-    public ResponseEntity<String>circuitBreakerTest(@PathVariable int delay){
-        return ResponseEntity .ok(userService.testingCircuitBreaker(delay));
-    }
 
 
 
