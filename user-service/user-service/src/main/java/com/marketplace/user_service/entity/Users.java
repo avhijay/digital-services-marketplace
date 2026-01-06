@@ -1,7 +1,9 @@
 package com.marketplace.user_service.entity;
 
 
+import com.marketplace.user_service.enums.Status;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -16,6 +18,7 @@ public class Users {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
+    @Setter(AccessLevel.NONE)
     private Long id;
 
     @Column(name = "email",nullable = false,unique = true ,length = 255)
@@ -30,6 +33,13 @@ public class Users {
 
     @Column(name = "updated_at")
     private Instant updatedAt;
+
+@Column(name = "user_id",nullable = false , length = 36)
+
+private String uniqueUserId;
+
+    @Column(name = "Status",nullable = false)
+    private Status status;
 
 
     @PrePersist
@@ -47,11 +57,11 @@ public class Users {
 
     public Users(){}
 
-
-    public Users(String email, String name, Instant createdAt, Instant updatedAt) {
+    public Users(Long id, String email, String name, String uniqueUserId, Status status) {
+        this.id = id;
         this.email = email;
         this.name = name;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
+        this.uniqueUserId = uniqueUserId;
+        this.status = status;
     }
 }
