@@ -1,12 +1,14 @@
 package com.marketplace.order_service.service;
 
 
+import com.marketplace.order_service.client.CatalogClient;
 import com.marketplace.order_service.client.NotificationClient;
 import com.marketplace.order_service.client.UserClient;
 import com.marketplace.order_service.dto.OrderRequest;
 import com.marketplace.order_service.dto.OrderResponse;
 import com.marketplace.order_service.entity.Orders;
 import com.marketplace.order_service.enums.OrderStatus;
+import com.marketplace.order_service.repository.OrderItemRepository;
 import com.marketplace.order_service.repository.OrderRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,21 +29,22 @@ private static final Logger log = LoggerFactory.getLogger(OrderServiceImpl.class
     private final UserClient userClient;
     private final NotificationClient notificationClient;
     private final OrderRepository orderRepository;
+    private final CatalogClient catalogClient;
+    private final OrderItemRepository orderItemRepository;
 
-    public OrderServiceImpl(UserClient userClient , NotificationClient notificationClient  , OrderRepository orderRepository){
+
+    public OrderServiceImpl(UserClient userClient , NotificationClient notificationClient  , OrderRepository orderRepository , CatalogClient catalogClient , OrderItemRepository orderItemRepository){
         this.userClient=userClient;
         this.notificationClient=notificationClient;
         this.orderRepository=orderRepository;
+        this.catalogClient=catalogClient;
+        this.orderItemRepository =orderItemRepository;
     }
 
 
     @Override
     public OrderResponse placeOrder(OrderRequest request) {
-//        log.info("Request received : creating a order ");
-//        Orders orders = new Orders();
-//        orders.setUserId(request.getUserId());
-//        orders.setStatus(OrderStatus.NEW);
-//        orders.setTotalAmount(request.ge);
+
 
 
 
