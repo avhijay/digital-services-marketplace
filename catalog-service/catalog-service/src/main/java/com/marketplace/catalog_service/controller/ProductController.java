@@ -3,11 +3,8 @@ package com.marketplace.catalog_service.controller;
 
 import com.marketplace.catalog_service.dto.AdminProductDto;
 import com.marketplace.catalog_service.dto.AdminProductDtoResponse;
-import com.marketplace.catalog_service.dto.InternalProductDto;
-import com.marketplace.catalog_service.dto.UpdateProduct;
+import com.marketplace.catalog_service.dto.Internal.InternalProductDto;
 import com.marketplace.catalog_service.service.ProductService;
-import com.marketplace.catalog_service.service.ProductServiceImpl;
-import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
@@ -43,7 +40,25 @@ public class ProductController {
     }
 
 
+    @PatchMapping("/increase/stock/")
+    public ResponseEntity<InternalProductDto> increaseStock(@RequestBody InternalProductDto internalProductDto){
 
+        InternalProductDto internalProductDto1 = productService.increaseStock(internalProductDto.id(), internalProductDto.stock());
+        return ResponseEntity.ok(internalProductDto1);
+
+    }
+
+
+
+
+
+    @PatchMapping("/decrease/stock/")
+    public ResponseEntity<InternalProductDto> decreaseStock(@RequestBody InternalProductDto internalProductDto){
+
+        InternalProductDto internalProductDto1 = productService.decreaseStock(internalProductDto.id(), internalProductDto.stock());
+        return ResponseEntity.ok(internalProductDto1);
+
+    }
 
 
 }

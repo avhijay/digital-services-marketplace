@@ -2,6 +2,7 @@ package com.marketplace.catalog_service.service;
 
 
 import com.marketplace.catalog_service.dto.*;
+import com.marketplace.catalog_service.dto.Internal.*;
 import com.marketplace.catalog_service.entity.Catalog;
 import com.marketplace.catalog_service.enums.Status;
 import com.marketplace.catalog_service.exception.InsufficientStockException;
@@ -12,8 +13,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Service
 public class ProductServiceImpl implements  ProductService{
@@ -139,6 +138,17 @@ log.info("Request received : activateProduct :{}",productId);
 
 
     }
+
+    @Override
+    public ValidateProductsResponse validateProducts(ValidateProductRequestInternal validateProductRequestInternal) {
+        return null;
+    }
+
+    @Override
+    public void updateProductStock(List<StockUpdateInternal> stockUpdateInternals) {
+
+    }
+
 
 
 

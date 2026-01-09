@@ -1,6 +1,7 @@
-package com.marketplace.order_service.dto;
+package com.marketplace.order_service.dto.internal;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 public record InternalProductDto(
 
@@ -9,7 +10,8 @@ public record InternalProductDto(
         BigDecimal price,
         String currency,
         Integer stock,
-        Status status
+        Status status,
+        List<Long>productIdAndStock
 
 )
 

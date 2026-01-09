@@ -13,11 +13,11 @@ public record OrderItemRequest (
 
     @NotNull
     @Min(1)
-    Integer quantity,
+    Integer quantity
 
-    @NotNull
-    @Positive
-    BigDecimal unitPrice
+//    @NotNull
+//    @Positive
+//    BigDecimal unitPrice
 
 )
 {}

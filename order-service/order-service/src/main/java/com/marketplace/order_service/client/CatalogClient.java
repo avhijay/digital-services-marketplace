@@ -2,7 +2,7 @@ package com.marketplace.order_service.client;
 
 
 
-import com.marketplace.order_service.dto.InternalProductDto;
+import com.marketplace.order_service.dto.internal.InternalProductDto;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;

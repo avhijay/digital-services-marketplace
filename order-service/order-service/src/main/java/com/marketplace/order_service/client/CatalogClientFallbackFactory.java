@@ -1,7 +1,7 @@
 package com.marketplace.order_service.client;
 
 
-import com.marketplace.order_service.dto.InternalProductDto;
+import com.marketplace.order_service.dto.internal.InternalProductDto;
 import com.marketplace.order_service.exception.CatalogServiceNotRespondingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

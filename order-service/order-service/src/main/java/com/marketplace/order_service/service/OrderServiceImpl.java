@@ -4,6 +4,7 @@ package com.marketplace.order_service.service;
 import com.marketplace.order_service.client.CatalogClient;
 import com.marketplace.order_service.client.NotificationClient;
 import com.marketplace.order_service.client.UserClient;
+import com.marketplace.order_service.dto.CreateOrderRequest;
 import com.marketplace.order_service.dto.OrderRequest;
 import com.marketplace.order_service.dto.OrderResponse;
 import com.marketplace.order_service.entity.Orders;
@@ -43,7 +44,7 @@ private static final Logger log = LoggerFactory.getLogger(OrderServiceImpl.class
 
 
     @Override
-    public OrderResponse placeOrder(OrderRequest request) {
+    public OrderResponse placeOrder(CreateOrderRequest request) {
 
 
 
@@ -51,6 +52,8 @@ private static final Logger log = LoggerFactory.getLogger(OrderServiceImpl.class
 
         return null;
     }
+
+
 
     @Override
     public OrderResponse getOrderById(Long id) {

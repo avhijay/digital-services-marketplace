@@ -1,6 +1,7 @@
 package com.marketplace.catalog_service.service;
 
 import com.marketplace.catalog_service.dto.*;
+import com.marketplace.catalog_service.dto.Internal.*;
 import com.marketplace.catalog_service.enums.Status;
 
 import java.util.List;
@@ -23,6 +24,13 @@ InternalProductDto getProductById(Long productId);
 List<InternalProductDto> getProductByIds(List<Long>ids);
 
 void validateStockAvailability(Long productId, Integer quantity );
+
+
+
+// inter-service for order generation
+
+ ValidateProductsResponse validateProducts(ValidateProductRequestInternal validateProductRequestInternal);
+ void updateProductStock(List<StockUpdateInternal>stockUpdateInternals);
 
 
 }

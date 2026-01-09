@@ -1,4 +1,4 @@
-package com.marketplace.catalog_service.dto;
+package com.marketplace.catalog_service.dto.Internal;
 
 import com.marketplace.catalog_service.enums.Status;
 
