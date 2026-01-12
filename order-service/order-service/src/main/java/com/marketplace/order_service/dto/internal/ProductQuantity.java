@@ -1,10 +1,12 @@
 package com.marketplace.order_service.dto.internal;
 
-public record ProductValidationItemInternal(
 
+
+public record ProductQuantity(
         Long productId,
         Integer quantity
 
 
 ) {
 }
+

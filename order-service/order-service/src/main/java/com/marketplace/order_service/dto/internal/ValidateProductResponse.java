@@ -1,5 +1,9 @@
 package com.marketplace.order_service.dto.internal;
 
+
+
+
+
 import java.math.BigDecimal;
 
 public record ValidateProductResponse(
@@ -13,13 +17,12 @@ public record ValidateProductResponse(
 
 
 ) {
-    public enum Status {
 
+    private enum Status {
         ACTIVE,
         INACTIVE,
-        DELETED,
-        SUSPENDED
+        OUT_OF_STOCK,
+        DISCONTINUED
     }
-
 
 }

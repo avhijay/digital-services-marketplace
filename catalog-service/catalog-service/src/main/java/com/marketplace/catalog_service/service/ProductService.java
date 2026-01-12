@@ -29,8 +29,8 @@ void validateStockAvailability(Long productId, Integer quantity );
 
 // inter-service for order generation
 
- ValidateProductsResponse validateProducts(ValidateProductRequestInternal validateProductRequestInternal);
- void updateProductStock(List<StockUpdateInternal>stockUpdateInternals);
+ ValidateProductsResponse validateProductsForOrder(ValidateProductsRequest validateProductsRequest);
+ void updateProductStock(List<ProductQuantity>stockUpdateInternals);
 
 
 }

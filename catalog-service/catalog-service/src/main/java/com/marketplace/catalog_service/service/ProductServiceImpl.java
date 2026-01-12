@@ -13,6 +13,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 public class ProductServiceImpl implements  ProductService{
@@ -140,12 +143,52 @@ log.info("Request received : activateProduct :{}",productId);
     }
 
     @Override
-    public ValidateProductsResponse validateProducts(ValidateProductRequestInternal validateProductRequestInternal) {
-        return null;
+    public ValidateProductsResponse validateProductsForOrder(ValidateProductsRequest validateProductsRequest) {
+
+        if (validateProductsRequest.productQuantities()==null|| validateProductsRequest.productQuantities().isEmpty()){
+            throw  new IllegalArgumentException("Ptoduct list not allowed to be empty ");
+        }
+
+
+      List<ProductQuantity> productQuantities = validateProductsRequest.productQuantities();
+List<Long>productIds = productQuantities.stream().map(ProductQuantity::productId).toList();
+List<Catalog> products = catalogRepository.findByIdIn(productIds);
+
+
+        Map<Long , Catalog> myProducts = products.stream().collect(Collectors.toMap(Catalog::getId, Function.identity()));
+
+        List<ValidateProductResponse> validateProductResponses = productQuantities.stream().map(items->{
+
+            Catalog product = myProducts.get(items.productId());
+            if (product == null) {
+                throw new ProductNotFoundException("No product found with the id: " + items.productId());
+            }
+
+            if (product.getStock() < items.quantity()) {
+                throw new InsufficientStockException("Not enough Stock available for: " + items.productId());
+            }
+
+            if (product.getStatus()!=Status.ACTIVE){
+                throw new IllegalStateException("Product not active with the id :"+product.getId());
+            }
+            return new ValidateProductResponse(
+                    product.getId(),
+                    product.getPrice(),
+                    product.getCurrency(),
+                    product.getStock(),
+                    product.getStatus()
+            );
+        }).toList();
+
+        return new ValidateProductsResponse(validateProductResponses);
     }
 
+
+
+
+
     @Override
-    public void updateProductStock(List<StockUpdateInternal> stockUpdateInternals) {
+    public void updateProductStock(List<ProductQuantity> stockUpdateInternals) {
 
     }
 
