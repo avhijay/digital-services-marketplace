@@ -3,7 +3,7 @@ package com.marketplace.catalog_service.controller;
 
 import com.marketplace.catalog_service.dto.AdminProductDto;
 import com.marketplace.catalog_service.dto.AdminProductDtoResponse;
-import com.marketplace.catalog_service.dto.Internal.InternalProductDto;
+import com.marketplace.catalog_service.dto.Internal.*;
 import com.marketplace.catalog_service.service.ProductService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,9 +49,6 @@ public class ProductController {
     }
 
 
-
-
-
     @PatchMapping("/decrease/stock/")
     public ResponseEntity<InternalProductDto> decreaseStock(@RequestBody InternalProductDto internalProductDto){
 
@@ -59,6 +56,20 @@ public class ProductController {
         return ResponseEntity.ok(internalProductDto1);
 
     }
+
+
+    @PostMapping ("/validate/product")
+    public ResponseEntity<ValidateProductsResponse> validateProduct (@RequestBody ValidateProductsRequest validateProductsRequest){
+        ValidateProductsResponse response = productService.validateProductsForOrder(validateProductsRequest);
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/internal/stock/decrease")
+    public ResponseEntity<Void> updateStockForOrder(@RequestBody List<ProductQuantity> items) {
+        productService.updateProductStock(items);
+        return ResponseEntity.noContent().build();
+    }
+
 
 
 }
