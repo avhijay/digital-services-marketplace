@@ -1,4 +1,4 @@
-package com.marketplace.order_service.dto.internal;
+package com.marketplace.order_service.dto.product;
 
 import java.math.BigDecimal;
 import java.util.List;

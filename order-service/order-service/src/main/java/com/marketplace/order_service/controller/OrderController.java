@@ -2,11 +2,9 @@ package com.marketplace.order_service.controller;
 
 
 import com.marketplace.order_service.client.UserClient;
-import com.marketplace.order_service.dto.OrderResponse;
 import com.marketplace.order_service.service.OrderServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController

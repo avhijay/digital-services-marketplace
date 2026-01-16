@@ -1,7 +1,6 @@
 package com.marketplace.order_service.client;
 
-import com.marketplace.order_service.dto.InternalUserDto;
-import com.marketplace.order_service.dto.UserDto;
+import com.marketplace.order_service.dto.user.InternalUserDto;
 import com.marketplace.order_service.exception.UserServiceNotRespondingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

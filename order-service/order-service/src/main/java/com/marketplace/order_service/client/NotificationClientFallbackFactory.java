@@ -1,7 +1,7 @@
 package com.marketplace.order_service.client;
 
 
-import com.marketplace.order_service.dto.NotificationRequest;
+import com.marketplace.order_service.dto.notification.NotificationRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cloud.openfeign.FallbackFactory;

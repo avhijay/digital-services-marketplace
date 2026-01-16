@@ -2,6 +2,7 @@ package com.marketplace.order_service.entity;
 
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -18,6 +19,7 @@ public class OrderItems {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
+            @Setter(AccessLevel.NONE)
     Long id;
 
     @Column(name = "order_id",nullable = false)

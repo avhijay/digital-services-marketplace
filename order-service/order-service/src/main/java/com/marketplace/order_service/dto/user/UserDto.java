@@ -1,4 +1,4 @@
-package com.marketplace.order_service.dto;
+package com.marketplace.order_service.dto.user;
 
 
 import lombok.Getter;

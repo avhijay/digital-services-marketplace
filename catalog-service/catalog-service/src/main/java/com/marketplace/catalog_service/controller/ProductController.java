@@ -58,13 +58,13 @@ public class ProductController {
     }
 
 
-    @PostMapping ("/validate/product")
+    @PostMapping ("/products/internal/validate-for-order")
     public ResponseEntity<ValidateProductsResponse> validateProduct (@RequestBody ValidateProductsRequest validateProductsRequest){
         ValidateProductsResponse response = productService.validateProductsForOrder(validateProductsRequest);
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/internal/stock/decrease")
+    @PostMapping("/products/internal/decrease-stock")
     public ResponseEntity<Void> updateStockForOrder(@RequestBody List<ProductQuantity> items) {
         productService.updateProductStock(items);
         return ResponseEntity.noContent().build();

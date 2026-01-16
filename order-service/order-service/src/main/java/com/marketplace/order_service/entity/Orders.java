@@ -3,6 +3,7 @@ package com.marketplace.order_service.entity;
 
 import com.marketplace.order_service.enums.OrderStatus;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -20,6 +21,7 @@ public class Orders {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
+    @Setter(AccessLevel.NONE)
     private long id;
 
     @Column(name ="order_number",nullable = false,unique = true , length = 50)
