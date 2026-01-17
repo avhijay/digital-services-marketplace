@@ -2,6 +2,7 @@ package com.marketplace.order_service.repository;
 
 import com.marketplace.order_service.entity.Orders;
 import com.marketplace.order_service.enums.OrderStatus;
+import com.marketplace.order_service.service.OrderIdProjection;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.time.LocalDateTime;
@@ -18,6 +19,8 @@ public interface OrderRepository extends JpaRepository<Orders,Long> {
     boolean existsByUserId(Long userId);
 
     long countByStatus(OrderStatus status);
+
+    List<OrderIdProjection>findOrderIdsByUserId(Long userId);
 
     List<Orders> findByUserIdAndStatus(Long userId , OrderStatus status);
 

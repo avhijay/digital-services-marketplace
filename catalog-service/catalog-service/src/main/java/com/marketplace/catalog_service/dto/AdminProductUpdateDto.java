@@ -1,5 +1,6 @@
 package com.marketplace.catalog_service.dto;
 
+import com.marketplace.catalog_service.enums.Currency;
 import com.marketplace.catalog_service.enums.Status;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -17,7 +18,7 @@ public record AdminProductUpdateDto(
 
     BigDecimal price,
 
-    String currency,
+    Currency currency,
 
     Integer stock,
     Status status

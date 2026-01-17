@@ -4,6 +4,7 @@ package com.marketplace.catalog_service.service;
 import com.marketplace.catalog_service.dto.*;
 import com.marketplace.catalog_service.dto.Internal.*;
 import com.marketplace.catalog_service.entity.Catalog;
+import com.marketplace.catalog_service.enums.Currency;
 import com.marketplace.catalog_service.enums.Status;
 import com.marketplace.catalog_service.exception.InsufficientStockException;
 import com.marketplace.catalog_service.exception.ProductNotFoundException;
@@ -248,7 +249,7 @@ catalogRepository.saveAll(products);
 
         Catalog newProduct = new Catalog();
         newProduct.setDescription(adminProductDto.description());
-        newProduct.setCurrency(adminProductDto.currency());
+        newProduct.setCurrency(Currency.INR);
         newProduct.setName(adminProductDto.name());
         newProduct.setPrice(adminProductDto.price());
         newProduct.setDescription(adminProductDto.description());
