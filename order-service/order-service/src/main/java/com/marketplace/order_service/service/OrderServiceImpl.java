@@ -26,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -138,10 +139,12 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public List<OrderResponse> getOrdersByUser(Long userId) {
         List<Orders> ordersByUser = orderRepository.findByUserId(userId);
+        Map<Long , List<OrderItemView>> view = ordersByUser.stream().collect(Collectors.toMap(Orders::getId, order-> getOrderItems(order.getId())));
 
-
-        return null;
+        return ordersByUser.stream().map(item-> new OrderResponse(item.getId(),userId,item.getStatus(),
+                item.getTotalAmount(),item.getCurrency(),view.get(item.getId()))).toList();
     }
+
 
     @Override
     public void cancelOrder(Long id) {
@@ -153,9 +156,17 @@ public class OrderServiceImpl implements OrderService {
 
     private OrderResponse mapFromEntity(Orders order) {
         List<OrderItems> orderItems = orderItemRepository.findByOrderId(order.getId());
-        List<OrderItemView> newOrdersItems = orderItems.stream().map(items -> new OrderItemView(items.getProductId(), items.getQuantity(), items.getUnitPrice(), items.getLineTotal())).toList();
+        List<OrderItemView> newOrdersItems = orderItems.stream().map(items -> new OrderItemView(items.getProductId(), items.getQuantity(),
+                items.getUnitPrice(), items.getLineTotal())).toList();
         return new OrderResponse(order.getId(), order.getUserId(), order.getStatus(), order.getTotalAmount(), order.getCurrency(), newOrdersItems);
     }
+
+    private List<OrderItemView>getOrderItems(Long id){
+        return orderItemRepository.findByOrderId(id).stream().map(item-> new OrderItemView(item.getProductId(),item.getQuantity(),
+                item.getUnitPrice(),item.getLineTotal())).toList();
+
+    }
+
 }
 
 

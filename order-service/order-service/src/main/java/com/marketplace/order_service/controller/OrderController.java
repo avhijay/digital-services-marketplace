@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.List;
 
 @RestController
 @RequestMapping("/orders")
@@ -54,6 +55,15 @@ private final OrderService orderService;
             log.info("Request - cancelOrder : received ");
             orderService.cancelOrder(orderId);
             return ResponseEntity.noContent().build();
+}
+
+
+@PostMapping("/by/user/{userId}")
+    public ResponseEntity<List<OrderResponse>>getOrderByUser(@PathVariable Long userId){
+            log.info("Request - getOrderByUser : received");
+            List<OrderResponse> order = orderService.getOrdersByUser(userId);
+            return ResponseEntity.ok(order);
+
 }
 
 
