@@ -2,13 +2,15 @@ package com.marketplace.order_service.dto.order;
 
 
 
+import com.marketplace.order_service.enums.Currency;
+
 import java.math.BigDecimal;
 
 public record OrderItemResponseData(
 
         Long productId,
         BigDecimal unitPrice,
-        String currency,
+        Currency currency,
         Integer quantity,
        BigDecimal lineTotal
 

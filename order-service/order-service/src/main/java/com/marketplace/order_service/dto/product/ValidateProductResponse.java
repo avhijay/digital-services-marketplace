@@ -4,13 +4,15 @@ package com.marketplace.order_service.dto.product;
 
 
 
+import com.marketplace.order_service.enums.Currency;
+
 import java.math.BigDecimal;
 
 public record ValidateProductResponse(
 
         Long productId,
         BigDecimal unitPrice,
-        String currency,
+        Currency currency,
         Integer availableStock,
         Status status
 
@@ -24,5 +26,6 @@ public record ValidateProductResponse(
         OUT_OF_STOCK,
         DISCONTINUED
     }
+
 
 }

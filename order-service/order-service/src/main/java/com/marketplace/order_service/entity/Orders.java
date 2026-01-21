@@ -1,6 +1,7 @@
 package com.marketplace.order_service.entity;
 
 
+import com.marketplace.order_service.enums.Currency;
 import com.marketplace.order_service.enums.OrderStatus;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -37,8 +38,9 @@ public class Orders {
     @Column(name = "total_amount", precision = 12 ,scale = 2)
     private BigDecimal totalAmount;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "currency",nullable = false , length = 5)
-    private String currency;
+    private Currency currency;
 
     @Column(name = "created_at",nullable = false)
     private Instant createdAt;
@@ -63,7 +65,8 @@ public class Orders {
     public Orders(){}
 
 
-    public Orders(String orderNumber, Long userId, OrderStatus status, BigDecimal totalAmount, String currency) {
+    public Orders(long id, String orderNumber, Long userId, OrderStatus status, BigDecimal totalAmount, Currency currency) {
+        this.id = id;
         this.orderNumber = orderNumber;
         this.userId = userId;
         this.status = status;

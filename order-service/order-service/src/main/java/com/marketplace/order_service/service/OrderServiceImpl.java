@@ -14,6 +14,7 @@ import com.marketplace.order_service.dto.product.ValidateProductsResponse;
 import com.marketplace.order_service.dto.user.InternalUserDto;
 import com.marketplace.order_service.entity.OrderItems;
 import com.marketplace.order_service.entity.Orders;
+import com.marketplace.order_service.enums.Currency;
 import com.marketplace.order_service.enums.OrderStatus;
 import com.marketplace.order_service.exception.OrderNotFoundException;
 import com.marketplace.order_service.exception.ProductNotAvailable;
@@ -73,6 +74,9 @@ public class OrderServiceImpl implements OrderService {
                 .collect(Collectors.toMap(ProductQuantity::productId, ProductQuantity::quantity, Integer::sum));
 
 
+
+
+
         // fetching product validation from catalog client
         log.debug("fetching products from catalog-client");
         ValidateProductsResponse response = catalogClient.validateProduct(request);
@@ -83,7 +87,9 @@ public class OrderServiceImpl implements OrderService {
 
 // fetching product data and putting  in orderItemResponse
         List<OrderItemResponseData> responseData = response.validateProductResponses().stream()
-                .map(item -> new OrderItemResponseData(
+                .map(item ->
+
+                        new OrderItemResponseData(
                         item.productId(), item.unitPrice(), item.currency(),
                         orderQuantity.get(item.productId()), item.unitPrice()
                         .multiply(BigDecimal.valueOf(orderQuantity.get(item.productId()))))).toList();
@@ -102,7 +108,9 @@ public class OrderServiceImpl implements OrderService {
         orders.setOrderNumber(UUID.randomUUID().toString());
         orders.setTotalAmount(totalOrderAmount);
         orders.setStatus(OrderStatus.NEW);
-        orders.setCurrency(responseData.stream().map(OrderItemResponseData::currency).toString());
+
+        // in future make it accept any --!!!!!!!!
+        orders.setCurrency(Currency.INR);
         orderRepository.save(orders);
         log.info("order creation ={} : success ", orders.getId());
 

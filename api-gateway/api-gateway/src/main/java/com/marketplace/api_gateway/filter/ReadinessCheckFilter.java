@@ -32,23 +32,23 @@ public class ReadinessCheckFilter implements GlobalFilter, Ordered {
             return chain.filter(exchange);
         }
 
-        return webClient.get().uri("lb://ORDER-SERVICE/actuator/health/readiness")
-                .retrieve().bodyToMono(Map.class)
-                .timeout(Duration.ofMillis(300))
-                .map(body ->body.get("status"))
-                .onErrorReturn("DOWN")
-                .flatMap(status->{
+        return webClient.get()
+                .uri("lb://ORDER-SERVICE/actuator/health/readiness")
+                .exchangeToMono(response-> {
 
 
-
-                    if (!"UP".equals(status)){
-                        return respondServiceUnavailable(exchange);
+                    if (response.statusCode().is2xxSuccessful()){
+                        return chain.filter(exchange);
                     }
 
-                    return chain.filter(exchange);
-                });
+                    return respondServiceUnavailable(exchange);
+                }).timeout(Duration.ofSeconds(1))
+                .onErrorResume(ex-> respondServiceUnavailable(exchange));
 
     }
+
+
+
     private  Mono<Void> respondServiceUnavailable(ServerWebExchange exchange){
 
    ServerHttpResponse response = exchange.getResponse();

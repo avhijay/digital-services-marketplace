@@ -221,7 +221,7 @@ return new ValidateProductsResponse(responses);
             throw new ProductNotFoundException("Some products not found ");
         }
 for(Catalog product : products){
-    Integer toRemove = updateQuantity.get(product);
+    Integer toRemove = updateQuantity.get(product.getId());
 
     if (product.getStock()<toRemove){
         throw  new InsufficientStockException("Stock cannot be updated , quantity exceeds current quantity "+product.getId());

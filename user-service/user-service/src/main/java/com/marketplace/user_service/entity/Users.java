@@ -38,7 +38,11 @@ public class Users {
 
 private String uniqueUserId;
 
-    @Column(name = "Status",nullable = false)
+
+
+@Enumerated(EnumType.STRING)
+
+    @Column(name = "status",nullable = false ,length = 20)
     private Status status;
 
 
@@ -60,6 +64,7 @@ private String uniqueUserId;
     public Users(Long id, String email, String name, String uniqueUserId, Status status) {
         this.id = id;
         this.email = email;
+
         this.name = name;
         this.uniqueUserId = uniqueUserId;
         this.status = status;

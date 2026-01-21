@@ -35,6 +35,8 @@ public class Catalog {
     @Column(name = "price",nullable = false,precision = 12,scale = 2)
     private BigDecimal price;
 
+
+    @Enumerated(EnumType.STRING)
     @Column(name = "currency",nullable = false,length = 5)
     private Currency currency;
 

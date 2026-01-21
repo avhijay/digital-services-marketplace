@@ -1,6 +1,8 @@
 package com.marketplace.order_service.exception;
 
 import jakarta.servlet.http.HttpServletRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -11,6 +13,8 @@ import java.time.LocalDateTime;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     @ExceptionHandler(UserServiceNotRespondingException.class)
     public ResponseEntity<ErrorResponse> userServiceNotResponding(UserServiceNotRespondingException e , HttpServletRequest request){
@@ -91,6 +95,23 @@ public class GlobalExceptionHandler {
 
 }
 
+
+
+    @ExceptionHandler(exception.class)
+    public ResponseEntity<ErrorResponse> handleAll(Exception e , HttpServletRequest request){
+
+        ErrorResponse error = new ErrorResponse();
+        error.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        error.setPath(request.getRequestURI());
+        error.setError(" Handled through : handle all exception ");
+        error.setMessage(e.getMessage());
+        error.setTimeStamp("Time"+Timestamp.valueOf(LocalDateTime.now()));
+        return new ResponseEntity<>(error,HttpStatus.INTERNAL_SERVER_ERROR);
+
+
+    }
+
+
 @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse>exception(exception e , HttpServletRequest request) {
 
@@ -103,4 +124,24 @@ public class GlobalExceptionHandler {
         error.setTimeStamp("Time"+Timestamp.valueOf(LocalDateTime.now()));
         return new ResponseEntity<>(error,HttpStatus.INTERNAL_SERVER_ERROR);
 }
+
+
+    @ExceptionHandler(ProductNotFoundException.class)
+    public ResponseEntity<ErrorResponse> ProductNotFound(ProductNotFoundException e , HttpServletRequest request){
+
+        ErrorResponse errorResponse = new ErrorResponse();
+
+        log.warn("Product not found with the given credentials={} ",e.getMessage());
+        errorResponse.setPath(request.getRequestURI());
+        errorResponse.setMessage(e.getMessage());
+        errorResponse.setStatus(HttpStatus.NOT_FOUND.value());
+        errorResponse.setTimeStamp("Time "+ LocalDateTime.now());
+        errorResponse.setError("No Product Found");
+        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+
+
+
+    }
+
+
 }

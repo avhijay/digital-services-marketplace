@@ -1,5 +1,6 @@
 package com.marketplace.order_service.dto.order;
 
+import com.marketplace.order_service.enums.Currency;
 import com.marketplace.order_service.enums.OrderStatus;
 
 import java.math.BigDecimal;
@@ -11,7 +12,7 @@ Long orderId,
 Long userId,
 OrderStatus status,
 BigDecimal totalAmount,
-String currency,
+Currency currency,
 List<OrderItemView>orderItemViews
 
 ) {
