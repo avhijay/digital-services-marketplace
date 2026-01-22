@@ -1,5 +1,6 @@
 package com.marketplace.api_gateway.filter;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
@@ -18,7 +19,7 @@ public class ReadinessCheckFilter implements GlobalFilter, Ordered {
 
     private final WebClient webClient;
 
-    public ReadinessCheckFilter(WebClient.Builder builder) {
+    public ReadinessCheckFilter (  @Qualifier("loadBalancerBuilder") WebClient.Builder builder) {
         this.webClient = builder.build();
     }
 
@@ -34,17 +35,19 @@ public class ReadinessCheckFilter implements GlobalFilter, Ordered {
 
         return webClient.get()
                 .uri("lb://ORDER-SERVICE/actuator/health/readiness")
-                .exchangeToMono(response-> {
+                .retrieve()
+                .bodyToMono(Map.class)
+                .timeout(Duration.ofSeconds(1))
+                .flatMap(item-> {
+                    String status = (String) item.get("status");
 
 
-                    if (response.statusCode().is2xxSuccessful()){
+                    if ("UP".equals(status)){
                         return chain.filter(exchange);
                     }
-
                     return respondServiceUnavailable(exchange);
-                }).timeout(Duration.ofSeconds(1))
-                .onErrorResume(ex-> respondServiceUnavailable(exchange));
 
+                }).onErrorResume(ex->respondServiceUnavailable(exchange));
     }
 
 

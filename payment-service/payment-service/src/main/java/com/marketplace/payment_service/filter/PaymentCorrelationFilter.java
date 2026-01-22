@@ -1,4 +1,4 @@
-package filter;
+package com.marketplace.payment_service.filter;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
