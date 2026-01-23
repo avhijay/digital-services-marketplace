@@ -50,7 +50,7 @@ public class Payment {
     private Status status;
 
     @Column(name = "method",nullable = false)
-    private Status method;
+    private String method;
 
     @Column(name = "provider",nullable = false ,length = 50)
     private String provider;
@@ -71,7 +71,7 @@ public class Payment {
     private Instant updatedAt;
 
 
-    public Payment(UUID paymentId, String orderReference, Long orderId, BigDecimal amount, Currency currency, Status status, Status method, String provider, String providerPaymentId, String failureReason, Integer retryCount) {
+    public Payment(UUID paymentId, String orderReference, Long orderId, BigDecimal amount, Currency currency, Status status, String method, String provider, String providerPaymentId, String failureReason, Integer retryCount) {
         this.paymentId = paymentId;
         this.orderReference = orderReference;
         this.orderId = orderId;

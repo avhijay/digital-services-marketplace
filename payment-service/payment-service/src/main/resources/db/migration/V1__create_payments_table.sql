@@ -1,6 +1,6 @@
 CREATE TABLE payments (
 id BIGINT PRIMARY KEY AUTO_INCREMENT,
-payment_id VARCHAR(50) UNIQUE NOT NULL,
+payment_id CHAR(36) UNIQUE NOT NULL,
 order_reference VARCHAR(36),
 order_id BIGINT NOT NULL,
 amount DECIMAL(12,2) NOT NULL,
