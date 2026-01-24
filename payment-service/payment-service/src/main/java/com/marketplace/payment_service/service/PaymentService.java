@@ -2,7 +2,7 @@ package com.marketplace.payment_service.service;
 
 import com.marketplace.payment_service.dto.PaymentRequest;
 import com.marketplace.payment_service.dto.PaymentResponse;
-import com.marketplace.payment_service.entity.Status;
+import com.marketplace.payment_service.enums.Status;
 
 import java.util.List;
 import java.util.UUID;

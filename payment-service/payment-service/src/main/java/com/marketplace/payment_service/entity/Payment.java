@@ -2,6 +2,8 @@ package com.marketplace.payment_service.entity;
 
 
 import com.marketplace.payment_service.enums.Currency;
+import com.marketplace.payment_service.enums.Method;
+import com.marketplace.payment_service.enums.Status;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -50,7 +52,8 @@ public class Payment {
     private Status status;
 
     @Column(name = "method",nullable = false)
-    private String method;
+    @Enumerated(EnumType.STRING)
+    private     Method method;
 
     @Column(name = "provider",nullable = false ,length = 50)
     private String provider;
@@ -71,7 +74,9 @@ public class Payment {
     private Instant updatedAt;
 
 
-    public Payment(UUID paymentId, String orderReference, Long orderId, BigDecimal amount, Currency currency, Status status, String method, String provider, String providerPaymentId, String failureReason, Integer retryCount) {
+    public Payment(UUID paymentId, String orderReference, Long orderId, BigDecimal amount,
+                   Currency currency, Status status, Method method, String provider,
+                   String providerPaymentId, String failureReason, Integer retryCount) {
         this.paymentId = paymentId;
         this.orderReference = orderReference;
         this.orderId = orderId;

@@ -9,6 +9,7 @@ import java.util.UUID;
 public interface PaymentRepository extends JpaRepository<Payment,Long> {
 
     Payment findByPaymentId(UUID paymentId);
+    Payment findByOrderId(Long OrderId);
     Payment findByOrderReference(String orderReference);
     List<Payment>findAllByStatus(String status);
     List<Payment>findAllByStatusAndRetryCountLess(Integer count);
