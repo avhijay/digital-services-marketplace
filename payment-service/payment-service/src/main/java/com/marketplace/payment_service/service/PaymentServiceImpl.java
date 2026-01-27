@@ -30,9 +30,9 @@ public class PaymentServiceImpl implements  PaymentService{
 
     @Override
     public PaymentResponse createPayment(PaymentRequest paymentRequest) {
-
+log.info("Request - createPayment : received by Payment-service");
         // checking if payment already exist
-
+log.debug("Checking if payment with orderId={} already exist ",paymentRequest.orderId());
         if (paymentRepository.findByOrderId(paymentRequest.orderId())!=null ){
             Payment payment = paymentRepository.findByOrderId(paymentRequest.orderId());
             if (payment.getStatus()==Status.PROCESSING){
@@ -44,33 +44,54 @@ public class PaymentServiceImpl implements  PaymentService{
         }
 
 // new payment creation
+        log.info("Generating payment ");
         UUID id = UUID.randomUUID();
         Payment newPayment = getNewPayment(paymentRequest, id);
         paymentRepository.save(newPayment);
+        log.info("Request - createPayment : success");
 
      return mapToResponseFromEntity(newPayment);
     }
 
 
+@Override
+    public   void processPayment(UUID paymentId){
+        log.info("Request - Process payment : received ");
 
-    private PaymentResponse processPayment(PaymentResponse paymentResponse){
-
-        Payment newPayment = paymentRepository.findByPaymentId(paymentResponse.paymentId());
+        log.debug("Checking if payment={} exist",paymentId);
+        Payment newPayment = paymentRepository.findByPaymentId(paymentId);
 
         // calling payment provider
+    log.info("Processing payment : start ");
         Status status = paymentProviderTesterPass(newPayment.getCurrency(),newPayment.getAmount(),newPayment.getPaymentId());
+        log.info("Processing payment - completed ");
         newPayment.setStatus(status);
-
-        return mapToResponseFromEntity(newPayment);
-    }
-
-    private PaymentResponse retryPayment(PaymentResponse paymentResponse){
-        Payment newPayment = paymentRepository.findByPaymentId(paymentResponse.paymentId());
-     return mapToResponseFromEntity(   retryPayment(newPayment));
-
+    log.info("Request - Process payment : success");
     }
 
 
+//
+//    private PaymentResponse retryPayment(PaymentResponse paymentResponse){
+//        Payment newPayment = paymentRepository.findByPaymentId(paymentResponse.paymentId());
+//     return mapToResponseFromEntity(   retryPayment(newPayment));
+//
+//    }
+
+    public PaymentResponse  retryPayment(UUID paymentId) {
+        Payment payment = paymentRepository.findByPaymentId(paymentId);
+
+        if (payment.getStatus() == Status.Failed) {
+            Integer retryCount = payment.getRetryCount();
+            if (retryCount >= 3) {
+                throw new PaymentFailureException("Payment retry limit exceeded : cannot complete payment");
+            }
+          payment.setRetryCount(  payment.getRetryCount()+1);
+            Status status =  paymentProviderTesterPass(payment.getCurrency(),payment.getAmount(),payment.getPaymentId());
+            payment.setStatus(status);
+        }
+        return mapToResponseFromEntity(payment);
+
+    }
 
 
 
@@ -78,7 +99,7 @@ public class PaymentServiceImpl implements  PaymentService{
 
     private  Payment getNewPayment(PaymentRequest paymentRequest, UUID id) {
         Payment newPayment = new Payment();
-        newPayment.setStatus(Status.PROCESSING);
+        newPayment.setStatus(Status.CREATED);
         newPayment.setPaymentId(id);
         newPayment.setProviderPaymentId(paymentRequest.providerPaymentId());
         newPayment.setProvider(paymentRequest.provider());
@@ -111,20 +132,7 @@ public class PaymentServiceImpl implements  PaymentService{
 
 
 
-    private Payment retryPayment(Payment payments) {
-Payment payment = paymentRepository.findByPaymentId(payments.getPaymentId());
 
-        if (payment.getStatus() == Status.Failed) {
-            Integer retryCount = payment.getRetryCount();
-            if (retryCount >= 3) {
-                throw new PaymentFailureException("Payment retry limit exceeded : cannot complete payment");
-            }
-          Status status =  paymentProviderTesterPass(payment.getCurrency(),payment.getAmount(),payment.getPaymentId());
-            payment.setStatus(status);
-        }
-        return payment;
-
-    }
 
 
     @Override
