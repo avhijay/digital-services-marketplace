@@ -13,6 +13,7 @@ public interface PaymentRepository extends JpaRepository<Payment,Long> {
     Payment findByOrderId(Long OrderId);
     Payment findByOrderReference(String orderReference);
     List<Payment>findAllByStatus(Status status);
+    Payment findByIdempotencyKey(String idempotencyKey);
     List<Payment>findAllByStatusAndRetryCountLess(Integer count);
     List<Payment>findByProviderPaymentId(String providerPaymentId);
 }

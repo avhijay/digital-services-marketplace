@@ -2,6 +2,7 @@ package com.marketplace.payment_service.entity;
 
 
 import com.marketplace.payment_service.enums.Currency;
+import com.marketplace.payment_service.enums.FailureReasons;
 import com.marketplace.payment_service.enums.Method;
 import com.marketplace.payment_service.enums.Status;
 import jakarta.persistence.*;
@@ -62,10 +63,15 @@ public class Payment {
     private String providerPaymentId;
 
     @Column(name = "failure_reason")
-    private String failureReason;
+    @Enumerated(EnumType.STRING)
+    private FailureReasons failureReason;
 
     @Column(name = "retry_count")
     private Integer retryCount;
+
+    @Column(name = "idempotency_key",nullable = false,unique = true)
+    private String idempotencyKey;
+
 
     @Column(name = "created_at",nullable = false)
     private Instant createdAt;
@@ -76,7 +82,7 @@ public class Payment {
 
     public Payment(UUID paymentId, String orderReference, Long orderId, BigDecimal amount,
                    Currency currency, Status status, Method method, String provider,
-                   String providerPaymentId, String failureReason, Integer retryCount) {
+                   String providerPaymentId, FailureReasons failureReason, Integer retryCount) {
         this.paymentId = paymentId;
         this.orderReference = orderReference;
         this.orderId = orderId;

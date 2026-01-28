@@ -10,7 +10,7 @@ import java.util.UUID;
 
 public interface PaymentService {
 
-    PaymentResponse createPayment(PaymentRequest paymentRequest);
+    PaymentResponse createPayment(PaymentRequest paymentRequest ,String idempotencyKey);
     void processPayment(UUID paymentId);
      PaymentResponse retryPayment(UUID paymentId);
 
@@ -20,5 +20,6 @@ public interface PaymentService {
     List<PaymentResponse>getPaymentByStatus(Status status);
     List<PaymentResponse>getPaymentByProvider(String ProviderPaymentId);
 
+PaymentResponse getPaymentByIdempotencyKey(String idempotencyKey);
 
 }

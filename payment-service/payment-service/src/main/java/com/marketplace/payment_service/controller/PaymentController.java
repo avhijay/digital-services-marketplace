@@ -26,9 +26,9 @@ public class PaymentController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<PaymentResponse>createPayment(@RequestBody PaymentRequest paymentRequest){
+    public ResponseEntity<PaymentResponse>createPayment( @RequestHeader("X-Idempotency-Key") String idempotencyKey , @RequestBody PaymentRequest paymentRequest){
         log.info("Request : create payment - received ");
-        PaymentResponse response=  paymentService.createPayment(paymentRequest);
+        PaymentResponse response=  paymentService.createPayment(paymentRequest ,idempotencyKey);
         URI location = URI.create("/payments/create"+response.id());
         return ResponseEntity.created(location).body(response);
 
@@ -76,6 +76,8 @@ public class PaymentController {
         List <PaymentResponse> responses = paymentService.getPaymentByProvider(providerId);
         return ResponseEntity.ok(responses);
     }
+
+
 
 
 

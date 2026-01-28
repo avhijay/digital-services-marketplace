@@ -1,7 +1,9 @@
 package com.marketplace.payment_service.dto;
 
+import com.marketplace.payment_service.enums.FailureReasons;
 import com.marketplace.payment_service.enums.Method;
 import com.marketplace.payment_service.enums.Status;
+import jakarta.annotation.Nullable;
 
 import java.math.BigDecimal;
 import java.util.UUID;
@@ -15,7 +17,9 @@ public record PaymentResponse (
         Status status,
         Method method,
         String provider,
-        String providerPaymentId
+        String providerPaymentId,
+        @Nullable
+        FailureReasons failureReasons
 
 
 
