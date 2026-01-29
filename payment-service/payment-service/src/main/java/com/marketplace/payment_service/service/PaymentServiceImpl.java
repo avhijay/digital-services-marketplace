@@ -1,15 +1,20 @@
 package com.marketplace.payment_service.service;
 
+import com.marketplace.payment_service.domain.ProcessPaymentObject;
+import com.marketplace.payment_service.domain.ProviderResultObject;
 import com.marketplace.payment_service.dto.PaymentRequest;
 import com.marketplace.payment_service.dto.PaymentResponse;
 import com.marketplace.payment_service.entity.Payment;
 import com.marketplace.payment_service.enums.Currency;
 import com.marketplace.payment_service.enums.FailureReasons;
+import com.marketplace.payment_service.enums.ProviderStatus;
 import com.marketplace.payment_service.enums.Status;
 import com.marketplace.payment_service.exception.PaymentAlreadyPresentException;
 import com.marketplace.payment_service.exception.PaymentFailureException;
 import com.marketplace.payment_service.exception.PaymentProcessingException;
+import com.marketplace.payment_service.provider.PaymentProvider;
 import com.marketplace.payment_service.repository.PaymentRepository;
+import jakarta.validation.ConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,10 +27,12 @@ import java.util.UUID;
 public class PaymentServiceImpl implements  PaymentService{
 
     private final PaymentRepository paymentRepository;
+    private final PaymentProvider paymentProvider;
     private static final Logger log = LoggerFactory.getLogger(PaymentServiceImpl.class);
 
-    public PaymentServiceImpl(PaymentRepository paymentRepository){
+    public PaymentServiceImpl(PaymentRepository paymentRepository , PaymentProvider paymentProvider){
         this.paymentRepository=paymentRepository;
+        this.paymentProvider=paymentProvider;
     }
 
 
@@ -34,11 +41,6 @@ public class PaymentServiceImpl implements  PaymentService{
     public PaymentResponse createPayment(PaymentRequest paymentRequest , String key) {
         String idempotencyKey = key;
 
-        if (paymentRepository.findByIdempotencyKey(idempotencyKey)!=null){
-            Payment payment = paymentRepository.findByIdempotencyKey(idempotencyKey);
-
-            return mapToResponseFromEntity(payment);
-        }
 
 
 log.info("Request - createPayment : received by Payment-service");
@@ -59,10 +61,20 @@ log.debug("Checking if payment with orderId={} already exist ",paymentRequest.or
         log.info("Generating payment ");
         UUID id = UUID.randomUUID();
         Payment newPayment = getNewPayment(paymentRequest, id , idempotencyKey);
-        paymentRepository.save(newPayment);
-        log.info("Request - createPayment : success");
 
-     return mapToResponseFromEntity(newPayment);
+        // handling duplicate payments
+        try {
+
+            paymentRepository.save(newPayment);
+            log.info("Request - createPayment : success");
+            return mapToResponseFromEntity(newPayment);
+
+        }catch (ConstraintViolationException e ){
+
+            PaymentResponse paymentResponse = mapToResponseFromEntity(paymentRepository.findByIdempotencyKey(idempotencyKey));
+            return paymentResponse;
+
+        }
     }
 
 
@@ -72,18 +84,30 @@ log.debug("Checking if payment with orderId={} already exist ",paymentRequest.or
 
         log.debug("Checking if payment={} exist",paymentId);
         Payment newPayment = paymentRepository.findByPaymentId(paymentId);
-        newPayment.setStatus(Status.PROCESSING);
-        if (newPayment.getStatus()!=Status.CREATED){
-            throw new PaymentFailureException("Payment status mismatch");
-        }
+    if (newPayment.getStatus()==Status.COMPLETED){ // TO CHANGE
+        throw new PaymentFailureException("Payment status mismatch");
+    }
+
+    newPayment.setStatus(Status.PROCESSING);
+
+    ProcessPaymentObject paymentObject = new ProcessPaymentObject(newPayment.getPaymentId(),
+            newPayment.getProviderPaymentId(),newPayment.getCurrency(),newPayment.getAmount());
 
         // calling payment provider
     log.info("Processing payment : start ");
-        Status status = paymentProviderTesterPass(newPayment.getCurrency(),newPayment.getAmount(),newPayment.getPaymentId());
+
+    ProviderResultObject resultObject = paymentProvider.processPaymentPass(paymentObject);
+
         log.info("Processing payment - completed ");
-        newPayment.setStatus(status);
-        paymentRepository.save(newPayment);
-    log.info("Request - Process payment : success");
+        if (resultObject.getProviderStatus()== ProviderStatus.FAILURE){
+            newPayment.setStatus(Status.Failed);
+            newPayment.setFailureReason(resultObject.getFailureReasons());
+        }else {
+            newPayment.setStatus(Status.COMPLETED);
+
+            paymentRepository.save(newPayment);
+            log.info("Request - Process payment : success");
+        }
     }
 
 
@@ -95,38 +119,46 @@ log.debug("Checking if payment with orderId={} already exist ",paymentRequest.or
 //    }
 
     public PaymentResponse  retryPayment(UUID paymentId) {
-        log.info("Request - retry payment : received ");
+        log.info("Request - retry newPayment : received ");
 
-        Payment payment = paymentRepository.findByPaymentId(paymentId);
+        Payment newPayment = paymentRepository.findByPaymentId(paymentId);
 
-        log.debug("Verifying payment status :{}",payment.getStatus());
-        log.info("Retrying payment : start ");
+        log.debug("Verifying newPayment status :{}", newPayment.getStatus());
+        log.info("Retrying newPayment : start ");
 
-        if (payment.getStatus() == Status.Failed) {
-            Integer retryCount = payment.getRetryCount();
+        if (newPayment.getStatus() == Status.Failed) {
+            Integer retryCount = newPayment.getRetryCount();
 
 
 
             log.info("Current retry count :{}",retryCount);
 
             if (retryCount >= 3) {
-                payment.setFailureReason(FailureReasons.PROVIDER_500);
+                newPayment.setFailureReason(FailureReasons.PROVIDER_500);
 
                 log.warn("Retry attempt exceeded :{} | max retry : 3 ",retryCount);
-                throw new PaymentFailureException("Payment retry limit exceeded : cannot complete payment");
+                throw new PaymentFailureException("Payment retry limit exceeded : cannot complete newPayment");
             }
 
             log.info("Updating retry count");
 
-          payment.setRetryCount(  payment.getRetryCount()+1);
-            Status status =  paymentProviderTesterPass(payment.getCurrency(),payment.getAmount(),payment.getPaymentId());
-            payment.setStatus(status);
+          newPayment.setRetryCount(  newPayment.getRetryCount()+1);
+            ProcessPaymentObject paymentObject = new ProcessPaymentObject(newPayment.getPaymentId(),
+                    newPayment.getProviderPaymentId(),newPayment.getCurrency(),newPayment.getAmount());
 
-            log.info("Retrying payment : finished ");
-            log.info("Request - retry payment : success ");
+            ProviderResultObject resultObject = paymentProvider.processPaymentPass(paymentObject);
 
+
+            if (resultObject.getProviderStatus()== ProviderStatus.FAILURE){
+                newPayment.setStatus(Status.Failed);
+                newPayment.setFailureReason(resultObject.getFailureReasons());
+            }else {
+                newPayment.setStatus(Status.COMPLETED);
+                log.info("Retrying newPayment : finished ");
+                log.info("Request - retry newPayment : success ");
+            }
         }
-        return mapToResponseFromEntity(payment);
+        return mapToResponseFromEntity(newPayment);
 
     }
 
@@ -149,6 +181,10 @@ log.debug("Checking if payment with orderId={} already exist ",paymentRequest.or
         newPayment.setRetryCount(0);
         return newPayment;
     }
+
+
+
+
     private Status paymentProviderTesterPass(Currency currency,
                                           BigDecimal amount ,
                                           UUID paymentId){
