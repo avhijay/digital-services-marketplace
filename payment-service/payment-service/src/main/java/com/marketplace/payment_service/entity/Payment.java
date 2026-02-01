@@ -32,7 +32,7 @@ public class Payment {
     @Column(name = "payment_id")
     private UUID paymentId;
 
-    @Column(name = "order_reference" , nullable = false , unique = true)
+    @Column(name = "order_reference" , nullable = false )
     private  String orderReference;
 
 
@@ -78,6 +78,25 @@ public class Payment {
 
     @Column(name = "updated_at",nullable = false)
     private Instant updatedAt;
+
+    @Version
+
+    private Long version;
+
+
+
+
+
+    @PrePersist
+    void onCreate(){
+        createdAt=Instant.now();
+
+    }
+
+    @PreUpdate
+    void onUpdate(){
+        updatedAt=Instant.now();
+    }
 
 
     public Payment(UUID paymentId, String orderReference, Long orderId, BigDecimal amount,

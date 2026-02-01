@@ -4,6 +4,7 @@ import com.marketplace.payment_service.dto.PaymentRequest;
 import com.marketplace.payment_service.dto.PaymentResponse;
 import com.marketplace.payment_service.enums.Status;
 import com.marketplace.payment_service.service.PaymentService;
+import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
@@ -13,7 +14,7 @@ import java.net.URI;
 import java.util.List;
 import java.util.UUID;
 
-
+@RestController
 @RequestMapping("/payments")
 public class PaymentController {
 
@@ -25,22 +26,24 @@ public class PaymentController {
 
     }
 
-    @PostMapping("/create")
-    public ResponseEntity<PaymentResponse>createPayment( @RequestHeader("X-Idempotency-Key") String idempotencyKey , @RequestBody PaymentRequest paymentRequest){
+    @PostMapping
+    public ResponseEntity<PaymentResponse>createPayment( @RequestHeader("X-Idempotency-Key") String idempotencyKey ,
+                                                         @Valid @RequestBody PaymentRequest paymentRequest){
         log.info("Request : create payment - received ");
         PaymentResponse response=  paymentService.createPayment(paymentRequest ,idempotencyKey);
-        URI location = URI.create("/payments/create"+response.id());
+
+        URI location = URI.create("/payments/"+response.paymentId());//to decide-------!!
         return ResponseEntity.created(location).body(response);
 
     }
 
-    @PostMapping("/process/{paymentId}")
+    @PostMapping("/{paymentId}/process")
     public ResponseEntity<Void> processPayment(@PathVariable UUID paymentId){
         paymentService.processPayment(paymentId);
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/retry/{paymentId}")
+    @PostMapping("/{paymentId}/retry")
     public ResponseEntity<PaymentResponse>retryPayment(@PathVariable UUID paymentId) {
         PaymentResponse response = paymentService.retryPayment(paymentId);
         return ResponseEntity.ok(response);
@@ -48,13 +51,7 @@ public class PaymentController {
     }
 
 
-        @GetMapping("/{id}")
-                public ResponseEntity<PaymentResponse>getPaymentById(@PathVariable Long id){
-        PaymentResponse response = paymentService.getPaymentById(id);
-        return ResponseEntity.ok(response);
 
-
-        }
 
         @GetMapping("/paymentId/{id}")
     public  ResponseEntity<PaymentResponse>getPaymentByPaymentId(@PathVariable UUID paymentId){

@@ -19,7 +19,7 @@ public record PaymentRequest(
         @NotNull
         Currency currency,
         @NotNull
-        Status status,
+        String status,
         @NotNull
         Method method,
         @NotNull

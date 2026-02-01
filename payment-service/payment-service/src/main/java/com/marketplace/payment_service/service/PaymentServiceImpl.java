@@ -9,7 +9,7 @@ import com.marketplace.payment_service.enums.Currency;
 import com.marketplace.payment_service.enums.FailureReasons;
 import com.marketplace.payment_service.enums.ProviderStatus;
 import com.marketplace.payment_service.enums.Status;
-import com.marketplace.payment_service.exception.PaymentAlreadyPresentException;
+import com.marketplace.payment_service.exception.PaymentAlreadyCompletedException;
 import com.marketplace.payment_service.exception.PaymentFailureException;
 import com.marketplace.payment_service.exception.PaymentProcessingException;
 import com.marketplace.payment_service.provider.PaymentProvider;
@@ -17,6 +17,7 @@ import com.marketplace.payment_service.repository.PaymentRepository;
 import jakarta.validation.ConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.nio.file.ProviderNotFoundException;
@@ -53,7 +54,7 @@ log.debug("Checking if payment with orderId={} already exist ",paymentRequest.or
                 throw new PaymentProcessingException("Cannot complete request as payment is being processed ");
             }
             if (payment.getStatus()==Status.COMPLETED){
-                throw new PaymentAlreadyPresentException("Payment already received");
+                throw new PaymentAlreadyCompletedException("Payment already received");
             }
         }
 
@@ -77,14 +78,14 @@ log.debug("Checking if payment with orderId={} already exist ",paymentRequest.or
         }
     }
 
-
+@Transactional
 @Override
     public   void processPayment(UUID paymentId){
         log.info("Request - Process payment : received ");
 
         log.debug("Checking if payment={} exist",paymentId);
         Payment newPayment = paymentRepository.findByPaymentId(paymentId);
-    if (newPayment.getStatus()==Status.COMPLETED){ // TO CHANGE
+    if (newPayment.getStatus()!=Status.CREATED){ // TO CHANGE
         throw new PaymentFailureException("Payment status mismatch");
     }
 
@@ -102,6 +103,7 @@ log.debug("Checking if payment with orderId={} already exist ",paymentRequest.or
         if (resultObject.getProviderStatus()== ProviderStatus.FAILURE){
             newPayment.setStatus(Status.Failed);
             newPayment.setFailureReason(resultObject.getFailureReasons());
+            paymentRepository.save(newPayment);
         }else {
             newPayment.setStatus(Status.COMPLETED);
 
@@ -117,7 +119,8 @@ log.debug("Checking if payment with orderId={} already exist ",paymentRequest.or
 //     return mapToResponseFromEntity(   retryPayment(newPayment));
 //
 //    }
-
+@Override
+    @Transactional
     public PaymentResponse  retryPayment(UUID paymentId) {
         log.info("Request - retry newPayment : received ");
 
@@ -253,7 +256,8 @@ log.debug("Checking if payment with orderId={} already exist ",paymentRequest.or
 
 
     private PaymentResponse mapToResponseFromEntity(Payment payment){
-        PaymentResponse response = new PaymentResponse(payment.getId(),payment.getPaymentId(), payment.getOrderReference(), payment.getOrderId(), payment.getAmount(),payment.getStatus(),payment.getMethod(), payment.getProvider(), payment.getProviderPaymentId(),null);
+        PaymentResponse response = new PaymentResponse(payment.getPaymentId(), payment.getOrderReference(),
+                payment.getOrderId(), payment.getAmount(),payment.getStatus(),payment.getMethod(), payment.getProvider(), payment.getProviderPaymentId(),null);
    return response;
 
 }
