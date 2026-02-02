@@ -14,9 +14,12 @@ import com.marketplace.payment_service.exception.PaymentFailureException;
 import com.marketplace.payment_service.exception.PaymentProcessingException;
 import com.marketplace.payment_service.provider.PaymentProvider;
 import com.marketplace.payment_service.repository.PaymentRepository;
+import com.marketplace.payment_service.state.PaymentStateMachine;
 import jakarta.validation.ConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
@@ -29,11 +32,13 @@ public class PaymentServiceImpl implements  PaymentService{
 
     private final PaymentRepository paymentRepository;
     private final PaymentProvider paymentProvider;
+    private final PaymentStateMachine paymentStateMachine;
     private static final Logger log = LoggerFactory.getLogger(PaymentServiceImpl.class);
 
-    public PaymentServiceImpl(PaymentRepository paymentRepository , PaymentProvider paymentProvider){
+    public PaymentServiceImpl(PaymentRepository paymentRepository , PaymentProvider paymentProvider , PaymentStateMachine   paymentStateMachine){
         this.paymentRepository=paymentRepository;
         this.paymentProvider=paymentProvider;
+        this.paymentStateMachine=paymentStateMachine;
     }
 
 
@@ -85,9 +90,10 @@ log.debug("Checking if payment with orderId={} already exist ",paymentRequest.or
 
         log.debug("Checking if payment={} exist",paymentId);
         Payment newPayment = paymentRepository.findByPaymentId(paymentId);
-    if (newPayment.getStatus()!=Status.CREATED){ // TO CHANGE
-        throw new PaymentFailureException("Payment status mismatch");
-    }
+
+        paymentStateMachine
+                .assertTransition(newPayment.getStatus(),Status.PROCESSING);
+
 
     newPayment.setStatus(Status.PROCESSING);
 
@@ -234,17 +240,16 @@ log.debug("Checking if payment with orderId={} already exist ",paymentRequest.or
     }
 
     @Override
-    public List<PaymentResponse> getPaymentByStatus(Status status) {
-        List<Payment>payments = paymentRepository.findAllByStatus(status);
-
-        return payments.stream().map(this::mapToResponseFromEntity).toList();
+    public Page<PaymentResponse> getPaymentByStatus(Status status, Pageable pageable) {
+        Page<Payment>payments = paymentRepository.findAllByStatus(status , pageable);
+        return payments.map(this::mapToResponseFromEntity);
     }
 
     @Override
-    public List<PaymentResponse> getPaymentByProvider(String providerPaymentId) {
-        List<Payment>payments = paymentRepository.findByProviderPaymentId(providerPaymentId);
+    public Page<PaymentResponse> getPaymentByProvider(String providerPaymentId , Pageable pageable) {
+        Page<Payment>payments = paymentRepository.findByProviderPaymentId(providerPaymentId , pageable);
 
-        return payments.stream().map(this::mapToResponseFromEntity).toList();
+        return payments.map(this::mapToResponseFromEntity);
 
     }
 

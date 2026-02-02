@@ -7,6 +7,8 @@ import com.marketplace.payment_service.service.PaymentService;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -61,16 +63,16 @@ public class PaymentController {
         }
 
         @GetMapping("/status/{status}")
-        public  ResponseEntity<List< PaymentResponse>>getPaymentByStatus(@PathVariable Status status){
-       List <PaymentResponse> responses = paymentService.getPaymentByStatus(status);
+        public  ResponseEntity<Page< PaymentResponse>>getPaymentByStatus(@PathVariable Status status , Pageable pageable){
+       Page <PaymentResponse> responses = paymentService.getPaymentByStatus(status , pageable);
        return ResponseEntity.ok(responses);
         }
 
 
 
     @GetMapping("/provider/{providerId}")
-    public  ResponseEntity<List< PaymentResponse>>getPaymentByProvider(@PathVariable String providerId){
-        List <PaymentResponse> responses = paymentService.getPaymentByProvider(providerId);
+    public  ResponseEntity<Page< PaymentResponse>>getPaymentByProvider(@PathVariable String providerId , Pageable pageable){
+        Page <PaymentResponse> responses = paymentService.getPaymentByProvider(providerId , pageable);
         return ResponseEntity.ok(responses);
     }
 

@@ -4,6 +4,8 @@ import com.marketplace.payment_service.dto.PaymentRequest;
 import com.marketplace.payment_service.dto.PaymentResponse;
 import com.marketplace.payment_service.entity.Payment;
 import com.marketplace.payment_service.enums.Status;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.UUID;
@@ -17,8 +19,8 @@ public interface PaymentService {
     PaymentResponse getPaymentById(Long id);
     PaymentResponse getPaymentByPaymentId(UUID paymentId);
 
-    List<PaymentResponse>getPaymentByStatus(Status status);
-    List<PaymentResponse>getPaymentByProvider(String ProviderPaymentId);
+    Page<PaymentResponse> getPaymentByStatus(Status status  , Pageable pageable);
+    Page<PaymentResponse>getPaymentByProvider(String ProviderPaymentId , Pageable pageable);
 
 PaymentResponse getPaymentByIdempotencyKey(String idempotencyKey);
 
