@@ -68,6 +68,7 @@ log.debug("Checking if payment with orderId={} already exist ",paymentRequest.or
         UUID id = UUID.randomUUID();
         Payment newPayment = getNewPayment(paymentRequest, id , idempotencyKey);
 
+        paymentStateMachine.assertTransition(Status.CREATED,Status.PROCESSING);
         // handling duplicate payments
         try {
 
@@ -92,7 +93,11 @@ log.debug("Checking if payment with orderId={} already exist ",paymentRequest.or
         Payment newPayment = paymentRepository.findByPaymentId(paymentId);
 
         paymentStateMachine
-                .assertTransition(newPayment.getStatus(),Status.PROCESSING);
+                .assertTransition (Status.PROCESSING ,Status.COMPLETED);
+    paymentStateMachine
+            .assertTransition (Status.PROCESSING ,Status.Failed);
+
+
 
 
     newPayment.setStatus(Status.PROCESSING);
@@ -112,7 +117,7 @@ log.debug("Checking if payment with orderId={} already exist ",paymentRequest.or
             paymentRepository.save(newPayment);
         }else {
             newPayment.setStatus(Status.COMPLETED);
-
+paymentStateMachine.assertTransition(Status.COMPLETED,null);
             paymentRepository.save(newPayment);
             log.info("Request - Process payment : success");
         }

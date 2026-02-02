@@ -78,6 +78,13 @@ public class GlobalExceptionHandler {
     }
 
 
+    @ExceptionHandler( InvalidPaymentStateTransitionException.class)
+    public ResponseEntity<ErrorResponse> invalidPaymentStateTransitionException  ( InvalidPaymentStateTransitionException e , HttpServletRequest request){
+        ErrorResponse errorResponse= helperMethod(e," Invalid PaymentStateTransition Exception TRIGGERED ",HttpStatus.INTERNAL_SERVER_ERROR,request);
+        return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+
+    }
+
 
 
     private ErrorResponse helperMethod(Exception e , String message, HttpStatus status , HttpServletRequest request){
