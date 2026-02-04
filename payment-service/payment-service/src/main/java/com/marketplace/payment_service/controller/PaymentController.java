@@ -3,6 +3,7 @@ package com.marketplace.payment_service.controller;
 import com.marketplace.payment_service.dto.PaymentRequest;
 import com.marketplace.payment_service.dto.PaymentResponse;
 import com.marketplace.payment_service.enums.Status;
+import com.marketplace.payment_service.service.PaymentAsyncService;
 import com.marketplace.payment_service.service.PaymentService;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
@@ -21,10 +22,12 @@ import java.util.UUID;
 public class PaymentController {
 
     private final PaymentService paymentService;
+    private final PaymentAsyncService paymentAsyncService;
     private static final Logger log = LoggerFactory.getLogger(PaymentController.class);
 
-    public PaymentController (PaymentService paymentService) {
+    public PaymentController (PaymentService paymentService ,PaymentAsyncService paymentAsyncService) {
         this.paymentService=paymentService;
+        this.paymentAsyncService = paymentAsyncService;
 
     }
 
@@ -41,7 +44,8 @@ public class PaymentController {
 
     @PostMapping("/{paymentId}/process")
     public ResponseEntity<Void> processPayment(@PathVariable UUID paymentId){
-        paymentService.processPayment(paymentId);
+
+        paymentAsyncService.processPayment(paymentId);
         return ResponseEntity.noContent().build();
     }
 

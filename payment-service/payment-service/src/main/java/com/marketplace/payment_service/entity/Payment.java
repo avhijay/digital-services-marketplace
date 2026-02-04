@@ -73,11 +73,17 @@ public class Payment {
     private String idempotencyKey;
 
 
+    @Column(name = "next_retry_at",nullable = true)
+    private Instant nextRetry;
+
     @Column(name = "created_at",nullable = false)
     private Instant createdAt;
 
     @Column(name = "updated_at",nullable = false)
     private Instant updatedAt;
+
+
+
 
     @Version
 
@@ -99,19 +105,22 @@ public class Payment {
     }
 
 
-    public Payment(UUID paymentId, String orderReference, Long orderId, BigDecimal amount,
-                   Currency currency, Status status, Method method, String provider,
-                   String providerPaymentId, FailureReasons failureReason, Integer retryCount) {
+    public Payment(Instant updatedAt, UUID paymentId, String orderReference, Long orderId, Currency currency, BigDecimal amount, Method method, Status status, String provider, FailureReasons failureReason,
+                   String providerPaymentId, Integer retryCount, String idempotencyKey, Instant nextRetry, Instant createdAt) {
+        this.updatedAt = updatedAt;
         this.paymentId = paymentId;
         this.orderReference = orderReference;
         this.orderId = orderId;
-        this.amount = amount;
         this.currency = currency;
-        this.status = status;
+        this.amount = amount;
         this.method = method;
+        this.status = status;
         this.provider = provider;
-        this.providerPaymentId = providerPaymentId;
         this.failureReason = failureReason;
+        this.providerPaymentId = providerPaymentId;
         this.retryCount = retryCount;
+        this.idempotencyKey = idempotencyKey;
+        this.nextRetry = nextRetry;
+        this.createdAt = createdAt;
     }
 }

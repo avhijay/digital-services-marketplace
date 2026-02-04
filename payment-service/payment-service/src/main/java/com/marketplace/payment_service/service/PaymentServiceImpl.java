@@ -20,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
@@ -28,6 +29,7 @@ import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
+@Service
 public class PaymentServiceImpl implements  PaymentService{
 
     private final PaymentRepository paymentRepository;
@@ -35,7 +37,9 @@ public class PaymentServiceImpl implements  PaymentService{
     private final PaymentStateMachine paymentStateMachine;
     private static final Logger log = LoggerFactory.getLogger(PaymentServiceImpl.class);
 
-    public PaymentServiceImpl(PaymentRepository paymentRepository , PaymentProvider paymentProvider , PaymentStateMachine   paymentStateMachine){
+    public PaymentServiceImpl(PaymentRepository paymentRepository , PaymentProvider paymentProvider ,
+                              PaymentStateMachine   paymentStateMachine){
+
         this.paymentRepository=paymentRepository;
         this.paymentProvider=paymentProvider;
         this.paymentStateMachine=paymentStateMachine;
@@ -68,7 +72,6 @@ log.debug("Checking if payment with orderId={} already exist ",paymentRequest.or
         UUID id = UUID.randomUUID();
         Payment newPayment = getNewPayment(paymentRequest, id , idempotencyKey);
 
-        paymentStateMachine.assertTransition(Status.CREATED,Status.PROCESSING);
         // handling duplicate payments
         try {
 
@@ -92,10 +95,7 @@ log.debug("Checking if payment with orderId={} already exist ",paymentRequest.or
         log.debug("Checking if payment={} exist",paymentId);
         Payment newPayment = paymentRepository.findByPaymentId(paymentId);
 
-        paymentStateMachine
-                .assertTransition (Status.PROCESSING ,Status.COMPLETED);
-    paymentStateMachine
-            .assertTransition (Status.PROCESSING ,Status.Failed);
+       paymentStateMachine.assertTransition(newPayment.getStatus(),Status.PROCESSING);
 
 
 
@@ -111,11 +111,17 @@ log.debug("Checking if payment with orderId={} already exist ",paymentRequest.or
     ProviderResultObject resultObject = paymentProvider.processPaymentPass(paymentObject);
 
         log.info("Processing payment - completed ");
+
+        //paymentState to be decided ---------------------------------------------!
+
         if (resultObject.getProviderStatus()== ProviderStatus.FAILURE){
             newPayment.setStatus(Status.Failed);
             newPayment.setFailureReason(resultObject.getFailureReasons());
             paymentRepository.save(newPayment);
+
         }else {
+
+
             newPayment.setStatus(Status.COMPLETED);
 paymentStateMachine.assertTransition(Status.COMPLETED,null);
             paymentRepository.save(newPayment);
@@ -133,6 +139,9 @@ paymentStateMachine.assertTransition(Status.COMPLETED,null);
 @Override
     @Transactional
     public PaymentResponse  retryPayment(UUID paymentId) {
+
+    //paymentState to be decided -----------------------------------------------------!
+
         log.info("Request - retry newPayment : received ");
 
         Payment newPayment = paymentRepository.findByPaymentId(paymentId);
@@ -156,7 +165,10 @@ paymentStateMachine.assertTransition(Status.COMPLETED,null);
 
             log.info("Updating retry count");
 
+            Instant nextRetryAt = retryCountIncrement(retryCount);
+
           newPayment.setRetryCount(  newPayment.getRetryCount()+1);
+          newPayment.setNextRetry(nextRetryAt);
             ProcessPaymentObject paymentObject = new ProcessPaymentObject(newPayment.getPaymentId(),
                     newPayment.getProviderPaymentId(),newPayment.getCurrency(),newPayment.getAmount());
 
@@ -269,6 +281,26 @@ paymentStateMachine.assertTransition(Status.COMPLETED,null);
         PaymentResponse response = new PaymentResponse(payment.getPaymentId(), payment.getOrderReference(),
                 payment.getOrderId(), payment.getAmount(),payment.getStatus(),payment.getMethod(), payment.getProvider(), payment.getProviderPaymentId(),null);
    return response;
+
+}
+
+
+private Instant retryCountIncrement(int retryCount){
+      return   switch (retryCount){
+            case 0 ->Instant.now().plusSeconds(5);
+
+            case 1 ->Instant.now().plusSeconds(10);
+
+            case 2 ->Instant.now().plusSeconds(20);
+
+            case 3 ->Instant.now().plusSeconds(30);
+
+
+          default->Instant.now().plusSeconds(0);
+
+
+
+        };
 
 }
 
