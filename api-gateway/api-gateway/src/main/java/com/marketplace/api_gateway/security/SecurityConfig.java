@@ -42,7 +42,8 @@ public class SecurityConfig {
 
 
     @Bean
-    public ReactiveJwtDecoder jwtDecoder(){
+    public ReactiveJwtDecoder
+    jwtDecoder(){
 
 
         return NimbusReactiveJwtDecoder
