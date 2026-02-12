@@ -1,4 +1,4 @@
-package security;
+package com.marketplace.auth_service.security;
 
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;

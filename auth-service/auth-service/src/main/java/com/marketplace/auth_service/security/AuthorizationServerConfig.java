@@ -1,4 +1,4 @@
-package security;
+package com.marketplace.auth_service.security;
 
 
 import org.springframework.context.annotation.Bean;
