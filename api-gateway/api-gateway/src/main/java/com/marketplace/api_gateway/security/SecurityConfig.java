@@ -22,36 +22,35 @@ public class SecurityConfig {
     public SecurityWebFilterChain securityWebFilterChain (ServerHttpSecurity security){
 
 
-        security.csrf(ServerHttpSecurity.CsrfSpec::disable)
-                .authorizeExchange(exchange-> {
-                    exchange.pathMatchers("/auth/**").permitAll()
-                            .pathMatchers("/actuator/**").permitAll()
+        security
+                .csrf(ServerHttpSecurity.CsrfSpec::disable)
 
-                            .pathMatchers(HttpMethod.GET,"/payment/**")
-                            .hasAuthority("SCOPE_payment.read")
+                .authorizeExchange(exchange -> exchange
+                        .pathMatchers("/auth/**").permitAll()
+                        .pathMatchers("/actuator/health").permitAll()
+                        .pathMatchers(HttpMethod.GET, "/payments/**")
+                        .hasAuthority("SCOPE_payment.read")
+                        .pathMatchers(HttpMethod.POST, "/payments/**")
+                        .hasAuthority("SCOPE_payment.write")
+                        .anyExchange().authenticated()
+                )
 
-                            .pathMatchers(HttpMethod.POST,"/payments/**")
-                            .hasAuthority("SCOPE_payment.write")
+                .exceptionHandling(exceptionHandling -> exceptionHandling
+                        .authenticationEntryPoint((exchange, ex) -> {
+                            exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
+                            return exchange.getResponse().setComplete();
+                        })
+                        .accessDeniedHandler((exchange, denied) -> {
+                            exchange.getResponse().setStatusCode(HttpStatus.FORBIDDEN);
+                            return exchange.getResponse().setComplete();
+                        })
+                )
 
-
-                            .anyExchange().authenticated();
-
-                });
-        security.oauth2ResourceServer(oauth2->{
-            oauth2.jwt(jwt->{
-
-                jwt.jwtDecoder(jwtDecoder());
-            });
-
-            oauth2.authenticationEntryPoint((exchange, ex) -> {
-                exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
-                return exchange.getResponse().setComplete();
-                    }).accessDeniedHandler((exchange, denied) -> {
-
-                        exchange.getResponse().setStatusCode(HttpStatus.FORBIDDEN);
-                        return exchange.getResponse().setComplete();
-            });
-        });
+                .oauth2ResourceServer(oauth2 -> oauth2
+                        .jwt(jwt -> jwt
+                                .jwtDecoder(jwtDecoder())
+                        )
+                );
 
         return security.build();
 
@@ -65,7 +64,7 @@ public class SecurityConfig {
 
 
         return NimbusReactiveJwtDecoder
-                .withJwkSetUri("")
+                .withJwkSetUri("http://auth-service:9000/oauth2/jwks")
                 .build();
     }
 
