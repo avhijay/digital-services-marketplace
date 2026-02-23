@@ -39,8 +39,8 @@ public class RsaKeyProvider {
 
             KeyPairGenerator generator = KeyPairGenerator.getInstance("RSA");
 
-        generator.initialize(2048);
-        return generator.generateKeyPair();
+            generator.initialize(2048);
+            return generator.generateKeyPair();
 
 
         }catch (Exception e){
@@ -65,22 +65,6 @@ public class RsaKeyProvider {
     }
 
 
-    @Bean
-    public RegisteredClientRepository registeredClientRepository(PasswordEncoder passwordEncoder){
-
-        RegisteredClient registeredClient = RegisteredClient.withId(UUID.randomUUID().toString())
-                .clientId("api-gateway")
-                .clientSecret(passwordEncoder.encode("gateway-secret"))
-                .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
-                .scope("payments.read")
-                .scope("payments.write")
-                .build();
-
-
-        return new InMemoryRegisteredClientRepository(registeredClient);
-
-
-    }
 
 
 

@@ -1,6 +1,7 @@
 package com.marketplace.auth_service.exception;
 
 
+
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,3 +55,4 @@ public class GlobalExceptionHandle {
 
 
 }
+
