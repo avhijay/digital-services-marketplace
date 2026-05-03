@@ -16,6 +16,6 @@ public interface PaymentRepository extends JpaRepository<Payment,Long> {
     Payment findByOrderReference(String orderReference);
     Page<Payment> findAllByStatus(Status status , Pageable pageable);
     Payment findByIdempotencyKey(String idempotencyKey);
-    Page<Payment>findAllByStatusAndRetryCountLess(Integer count, Pageable pageable);
+    Page<Payment>findAllByStatusAndRetryCountLessThan( Status status,Integer count, Pageable pageable);
     Page<Payment>findByProviderPaymentId(String providerPaymentId , Pageable pageable);
 }

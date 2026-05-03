@@ -2,12 +2,14 @@ package com.marketplace.payment_service.state;
 
 import com.marketplace.payment_service.enums.Status;
 import com.marketplace.payment_service.exception.InvalidPaymentStateTransitionException;
+import org.springframework.stereotype.Component;
 
 import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.Map;
 import java.util.Set;
 
+@Component
 public class PaymentStateMachine {
 
     private final Map<Status , Set<Status>> transitionsAllowed = new EnumMap<>(Status.class);

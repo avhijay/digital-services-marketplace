@@ -6,7 +6,9 @@ import com.marketplace.payment_service.enums.FailureReasons;
 import com.marketplace.payment_service.enums.ProviderStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
+@Service
 public class PaymentProviderImpl implements PaymentProvider{
     private static final Logger log = LoggerFactory.getLogger(PaymentProviderImpl.class);
 
